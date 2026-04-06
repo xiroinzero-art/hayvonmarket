@@ -1,0 +1,225 @@
+{% extends 'main/base.html' %}
+{% block title %}AnimalsMarket — Bosh sahifa{% endblock %}
+{% block content %}
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-orb" style="width:500px;height:500px;top:-120px;right:-100px;background:rgba(34,197,94,.12)"></div>
+  <div class="hero-orb" style="width:380px;height:380px;bottom:-80px;left:-80px;background:rgba(22,163,74,.1);animation-delay:-3s"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge afu">🚀 Yangi platforma — 2026</div>
+      <h1 class="hero-h1 afu d1"><span class="shimmer">AnimalsMarket</span></h1>
+      <p class="hero-p afu d2">O'zbekistondagi <strong>Animals savdosi</strong> uchun zamonaviy onlayn platforma. Ishonchli sotuvchilar, qulay narxlar.</p>
+      <div class="hero-btns afu d3">
+        <a href="/catalog"     class="btn btn-p btn-lg">🔍 Katalogni ko'rish</a>
+        <a href="/listing/new" class="btn btn-o btn-lg">➕ E'lon joylash</a>
+      </div>
+      <div class="hero-trust afu d4">
+        <div class="trust-i"><div class="trust-dot">✅</div>Tasdiqlangan sotuvchilar</div>
+        <div class="trust-i"><div class="trust-dot">🔒</div>Xavfsiz savdo</div>
+        <div class="trust-i"><div class="trust-dot">📍</div>14 viloyat</div>
+      </div>
+    </div>
+    <div class="hero-vis afr d3">
+      <div style="position:relative">
+        <div style="position:absolute;inset:0;background:rgba(34,197,94,.15);border-radius:24px;filter:blur(40px)"></div>
+        <div style="position:relative;background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.12);padding:28px" class="aflt">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+            <div style="width:38px;height:38px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🐄</div>
+            <span style="font-weight:800;font-size:16px">AnimalsMarket</span>
+            <span style="margin-left:auto;padding:3px 10px;background:#dcfce7;color:#16a34a;border-radius:50px;font-size:12px;font-weight:600">🟢 Online</span>
+          </div>
+          {% for item in recent[:3] %}
+          <div style="background:#f9fafb;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:10px;transition:transform .2s" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='none'">
+            <span style="font-size:32px">{{ item.animal_emoji }}</span>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:14px;color:#111">{{ item.title[:28] }}{% if item.title|length>28 %}...{% endif %}</div>
+              <div style="font-size:12px;color:#6b7280">📍 {{ item.region }}</div>
+            </div>
+            <div style="font-weight:800;color:#16a34a;font-size:14px;white-space:nowrap">{{ item.price|fmt }} so'm</div>
+          </div>
+          {% endfor %}
+          <a href="/catalog" style="display:block;text-align:center;padding:10px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border-radius:12px;font-weight:600;margin-top:4px;text-decoration:none;transition:opacity .2s" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
+            Barcha e'lonlarni ko'rish →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:24px;left:50%;transform:translateX(-50%)" class="abng">
+    <svg width="28" height="28" fill="none" stroke="#9ca3af" stroke-width="2" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats-strip">
+  <div class="stats-in">
+    <div class="stat-item" data-anim><div class="stat-n" data-count="{{ stats.listings }}" data-suf="+">0</div><div class="stat-l">Faol e'lonlar</div></div>
+    <div class="stat-item" data-anim><div class="stat-n" data-count="{{ stats.users }}"    data-suf="+">0</div><div class="stat-l">Foydalanuvchilar</div></div>
+    <div class="stat-item" data-anim><div class="stat-n" data-count="{{ stats.sold }}"     data-suf="+">0</div><div class="stat-l">Muvaffaqiyatli savdolar</div></div>
+    <div class="stat-item" data-anim><div class="stat-n" data-count="{{ stats.regions }}">0</div><div class="stat-l">Viloyatlar qamrovi</div></div>
+  </div>
+</div>
+
+<!-- ── PREMIUM ── -->
+{% if premium %}
+<section class="sec">
+  <div class="sec-in">
+    <div class="sec-hd">
+      <div class="sec-badge" data-anim>⭐ Premium e'lonlar</div>
+      <h2 class="sec-tit" data-anim>Tanlangan <span class="gt">e'lonlar</span></h2>
+      <p class="sec-sub" data-anim>Tasdiqlangan sotuvchilardan eng yaxshi takliflar</p>
+    </div>
+    <div class="g4">
+      {% for item in premium %}
+      <a href="/listing/{{ item.id }}" class="card" data-anim style="text-decoration:none;color:inherit">
+        <div class="card-img {% if item.is_premium %}premium{% endif %}">{{ item.animal_emoji }}</div>
+        <div class="card-body">
+          <div class="card-tit">{{ item.title }}</div>
+          <div class="card-tags">
+            <span class="tag">📍 {{ item.region }}</span>
+            {% if item.age %}<span class="tag">🕐 {{ item.age }}</span>{% endif %}
+            {% if item.count > 1 %}<span class="tag">🔢 {{ item.count }} bosh</span>{% endif %}
+          </div>
+          <div class="card-price">{{ item.price|fmt }} so'm</div>
+          <div class="card-seller">
+            <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ (item.full_name or item.username)[0]|upper }}</div>
+            {{ item.full_name or item.username }}
+            {% if item.is_verified %}<span class="vbadge">✅</span>{% endif %}
+            <span style="margin-left:auto">⭐ {{ "%.1f"|format(item.rating) }}</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── HOW IT WORKS ── -->
+<section class="sec" style="background:linear-gradient(135deg,#0f172a,#1e293b)">
+  <div class="sec-in">
+    <div class="sec-hd">
+      <div class="sec-badge" data-anim>📖 Qanday ishlaydi</div>
+      <h2 class="sec-tit" data-anim style="color:#fff">3 ta oddiy <span class="gt">qadam</span></h2>
+      <p class="sec-sub" data-anim>Platformadan foydalanish juda oson</p>
+    </div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;max-width:900px;margin:0 auto;align-items:center">
+      {% for icon, title, desc in [
+        ('📝','Ro\'yxatdan o\'ting','Tez ro\'yxatdan o\'ting va profilingizni to\'ldiring'),
+        ('➕','E\'lon joylang','Hayvon haqida ma\'lumot kiriting va e\'lon qiling'),
+        ('🤝','Savdo qiling','Xaridorlar bilan bog\'laning va xavfsiz savdo qiling'),
+      ] %}
+      <div style="flex:1;min-width:220px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;text-align:center;backdrop-filter:blur(10px);transition:transform .3s,box-shadow .3s;cursor:default" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 20px 40px rgba(34,197,94,.15)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'" data-anim>
+        <div style="width:64px;height:64px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;box-shadow:0 8px 24px rgba(34,197,94,.3)">{{ icon }}</div>
+        <div style="position:absolute;top:-14px;left:-14px;width:32px;height:32px;background:#22c55e;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px">{{ loop.index }}</div>
+        <h3 style="color:#fff;font-weight:700;font-size:17px;margin-bottom:8px">{{ title }}</h3>
+        <p style="color:#94a3b8;font-size:14px;line-height:1.6">{{ desc }}</p>
+      </div>
+      {% if not loop.last %}
+      <div style="font-size:28px;color:#22c55e;flex-shrink:0" class="abng">→</div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:40px" data-anim>
+      <a href="/register" class="btn btn-p btn-lg">Hoziroq boshlash →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── RECENT ── -->
+<section class="sec">
+  <div class="sec-in">
+    <div class="sec-hd">
+      <div class="sec-badge" data-anim>🕐 So'nggi e'lonlar</div>
+      <h2 class="sec-tit" data-anim>Yangi <span class="gt">e'lonlar</span></h2>
+      <p class="sec-sub" data-anim>Yangi qo'shilgan e'lonlar</p>
+    </div>
+    <div class="g4">
+      {% for item in recent %}
+      <a href="/listing/{{ item.id }}" class="card" data-anim style="text-decoration:none;color:inherit;animation-delay:{{ loop.index0 * 0.05 }}s">
+        <div class="card-img {% if item.is_premium %}premium{% endif %}">{{ item.animal_emoji }}</div>
+        <div class="card-body">
+          <div class="card-tit">{{ item.title }}</div>
+          <div class="card-tags">
+            <span class="tag">📍 {{ item.region }}</span>
+            <span class="tag">{{ item.animal_emoji }} {{ item.animal_name }}</span>
+          </div>
+          <div class="card-price">{{ item.price|fmt }} so'm</div>
+          <div class="card-seller">
+            <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ (item.full_name or item.username)[0]|upper }}</div>
+            {{ item.full_name or item.username }}
+            {% if item.is_verified %}<span class="vbadge">✅</span>{% endif %}
+            <span style="margin-left:auto;font-size:11px">👁 {{ item.views }}</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:36px" data-anim>
+      <a href="/catalog" class="btn btn-o btn-lg">Barcha e'lonlarni ko'rish →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── ANIMAL TYPES ── -->
+<section class="sec" style="background:var(--bg2)">
+  <div class="sec-in">
+    <div class="sec-hd">
+      <div class="sec-badge" data-anim>🐾 Kategoriyalar</div>
+      <h2 class="sec-tit" data-anim>Hayvon <span class="gt">turlari</span></h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px;max-width:900px;margin:0 auto">
+      {% for slug,emoji,name in animal_types %}
+      <a href="/catalog?type={{ slug }}" style="background:#fff;border-radius:16px;padding:20px 12px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.05);border:1.5px solid transparent;transition:all .25s;text-decoration:none;color:inherit" onmouseover="this.style.borderColor='#22c55e';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 30px rgba(34,197,94,.15)'" onmouseout="this.style.borderColor='transparent';this.style.transform='none';this.style.boxShadow='0 2px 12px rgba(0,0,0,.05)'" data-anim>
+        <div style="font-size:36px;margin-bottom:8px">{{ emoji }}</div>
+        <div style="font-weight:600;font-size:13px;color:#374151">{{ name }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── TOP SELLERS ── -->
+{% if top %}
+<section class="sec">
+  <div class="sec-in">
+    <div class="sec-hd">
+      <div class="sec-badge" data-anim>🏆 Top sotuvchilar</div>
+      <h2 class="sec-tit" data-anim>Ishonchli <span class="gt">sotuvchilar</span></h2>
+    </div>
+    <div class="g4">
+      {% for u in top %}
+      <a href="/user/{{ u.username }}" class="card" style="text-decoration:none;color:inherit;padding:24px;text-align:center" data-anim>
+        <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 6px 20px rgba(34,197,94,.25)">{{ (u.avatar_letter or (u.full_name or u.username)[0])|upper }}</div>
+        <div style="font-weight:700;font-size:16px;margin-bottom:4px">{{ u.full_name or u.username }}</div>
+        <div style="font-size:13px;color:#6b7280;margin-bottom:10px">📍 {{ u.region or 'O\'zbekiston' }}</div>
+        <div style="display:flex;justify-content:center;gap:14px;font-size:13px">
+          <span>⭐ {{ "%.1f"|format(u.rating) }}</span>
+          <span>📦 {{ u.total_sales }} savdo</span>
+          {% if u.is_verified %}<span class="vbadge">✅ Tasdiqlangan</span>{% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── CTA BANNER ── -->
+<section style="padding:80px 24px;background:linear-gradient(135deg,#22c55e,#16a34a);position:relative;overflow:hidden">
+  <div style="position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:rgba(255,255,255,.08);border-radius:50%"></div>
+  <div style="position:absolute;bottom:-60px;left:-60px;width:250px;height:250px;background:rgba(255,255,255,.06);border-radius:50%"></div>
+  <div style="max-width:700px;margin:0 auto;text-align:center;position:relative;z-index:1">
+    <div style="font-size:60px;margin-bottom:20px" class="abng">🐄</div>
+    <h2 style="font-size:clamp(28px,4vw,48px);font-weight:800;color:#fff;margin-bottom:14px" data-anim>Bugun e'lon joylaing!</h2>
+    <p style="font-size:18px;color:rgba(255,255,255,.85);margin-bottom:32px;line-height:1.65" data-anim>Minglab xaridorlar siz sotayotgan hayvonlarni qidiryapti. Hoziroq e'lon joylaing va tez soting!</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap" data-anim>
+      <a href="/listing/new" class="btn" style="background:#fff;color:#16a34a;font-weight:700;padding:14px 32px;font-size:16px;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.15)">➕ E'lon joylash</a>
+      <a href="/catalog"     class="btn" style="background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);padding:14px 32px;font-size:16px;border-radius:14px">🔍 Katalog</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

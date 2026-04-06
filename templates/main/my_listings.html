@@ -1,0 +1,46 @@
+{% extends 'main/base.html' %}{% block title %}Mening e'lonlarim{% endblock %}
+{% block content %}
+<div class="pw"><div class="cn" style="padding-top:32px;padding-bottom:60px">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:28px" data-anim>
+    <h1 style="font-size:30px;font-weight:800">📋 Mening <span class="gt">e'lonlarim</span></h1>
+    <a href="/listing/new" class="btn btn-p">➕ Yangi e'lon</a>
+  </div>
+  {% if items %}
+  <div style="display:flex;flex-direction:column;gap:14px">
+    {% for item in items %}
+    <div class="sc" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap" data-anim>
+      <div style="font-size:52px;background:var(--bg);border-radius:14px;width:72px;height:72px;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ item.animal_emoji }}</div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-weight:700;font-size:16px;margin-bottom:4px">{{ item.title }}</div>
+        <div style="font-size:13px;color:var(--mt)">📍 {{ item.region }} · 👁 {{ item.views }} · {{ item.created_at[:10] }}</div>
+        <div style="font-weight:800;font-size:18px;color:var(--gd);margin-top:4px">{{ item.price|fmt }} so'm</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        {% if item.is_sold %}<span class="badge b-rd">❌ Sotildi</span>
+        {% elif not item.is_active %}<span class="badge b-yw">⏸ To'xtatilgan</span>
+        {% else %}<span class="badge b-gr">✅ Faol</span>{% endif %}
+        {% if item.is_premium %}<span class="badge" style="background:#fef3c7;color:#92400e">⭐ Premium</span>{% endif %}
+        <a href="/listing/{{ item.id }}" class="btn btn-o btn-sm">Ko'rish</a>
+        {% if not item.is_sold %}
+        <a href="/listing/{{ item.id }}/edit" class="btn btn-o btn-sm">✏️</a>
+        <form method="post" action="/listing/{{ item.id }}/sold" style="display:inline" onsubmit="return confirm('Sotildi deb belgilash?')">
+          <button type="submit" class="btn btn-sm" style="background:#fef3c7;color:#92400e;border:1.5px solid #fde68a">💰 Sotildi</button>
+        </form>
+        {% endif %}
+        <form method="post" action="/listing/{{ item.id }}/delete" style="display:inline" onsubmit="return confirm('O\'chirishni tasdiqlaysizmi?')">
+          <button type="submit" class="btn btn-d btn-sm">🗑</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:80px 0" data-anim>
+    <div style="font-size:80px;margin-bottom:18px">📭</div>
+    <h2 style="font-size:22px;font-weight:700;margin-bottom:10px">E'lonlar yo'q</h2>
+    <p style="color:var(--mt);margin-bottom:22px">Hali e'lon joylamadingiz</p>
+    <a href="/listing/new" class="btn btn-p btn-lg">➕ Birinchi e'lon joylash</a>
+  </div>
+  {% endif %}
+</div></div>
+{% endblock %}

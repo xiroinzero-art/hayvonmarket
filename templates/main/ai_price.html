@@ -1,0 +1,348 @@
+{% extends 'main/base.html' %}{% block title %}🤖 AI Narx Baholovchi{% endblock %}
+{% block head %}
+<style>
+/* ── AI Page styles ── */
+.ai-hero {
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1035 50%, #0a1a0a 100%);
+  padding: 48px 0 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.ai-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='%238b5cf6' stroke-width='0.5' opacity='0.15'/%3E%3C/svg%3E");
+}
+.ai-hero-glow1 { position:absolute;top:-60px;left:-60px;width:360px;height:360px;background:radial-gradient(circle,rgba(139,92,246,.25),transparent 70%);border-radius:50%;animation:float 8s ease-in-out infinite; }
+.ai-hero-glow2 { position:absolute;bottom:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(34,197,94,.2),transparent 70%);border-radius:50%;animation:float 10s ease-in-out infinite;animation-delay:-4s; }
+.ai-badge {
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(139,92,246,.15);color:#a78bfa;
+  border:1px solid rgba(139,92,246,.3);border-radius:100px;
+  padding:5px 16px;font-size:13px;font-weight:700;margin-bottom:16px;
+}
+.ai-hero h1 { font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;color:#fff;margin-bottom:10px; }
+.ai-hero p  { color:rgba(255,255,255,.55);font-size:1rem;max-width:540px;margin:0 auto; }
+.ai-grid { display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:1000px;margin:0 auto; }
+@media(max-width:768px){ .ai-grid{grid-template-columns:1fr;} }
+.ai-card {
+  background:var(--bg2);border:1px solid var(--bdr);border-radius:20px;padding:28px;
+  box-shadow:0 4px 24px rgba(0,0,0,.06);
+}
+/* Upload zone */
+.upload-zone {
+  border:2px dashed rgba(139,92,246,.4);border-radius:16px;padding:28px;
+  text-align:center;cursor:pointer;transition:all .25s;position:relative;
+  background:rgba(139,92,246,.04);
+}
+.upload-zone:hover, .upload-zone.drag { border-color:#8b5cf6;background:rgba(139,92,246,.08); }
+.upload-zone input[type=file] { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
+.upload-preview { display:none;width:100%;height:200px;object-fit:cover;border-radius:12px;margin-top:12px; }
+.upload-preview.show { display:block; }
+/* AI result */
+.ai-result {
+  background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(34,197,94,.05));
+  border:1.5px solid rgba(139,92,246,.2);border-radius:20px;padding:28px;
+  margin-top:24px;
+}
+.ai-price-main {
+  text-align:center;padding:20px;background:linear-gradient(135deg,#7c3aed,#059669);
+  border-radius:16px;margin-bottom:20px;color:#fff;
+}
+.ai-price-main .label { font-size:12px;opacity:.7;font-weight:600;text-transform:uppercase;letter-spacing:.5px; }
+.ai-price-main .value { font-size:2.4rem;font-weight:900;line-height:1.1; }
+.ai-price-main .range { font-size:.85rem;opacity:.8;margin-top:4px; }
+.price-range-bar {
+  display:flex;gap:12px;margin-bottom:16px;
+}
+.prb-item { flex:1;text-align:center;background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:12px 8px; }
+.prb-item .lbl { font-size:11px;color:var(--mt);font-weight:600; }
+.prb-item .val { font-size:1.2rem;font-weight:800;color:var(--pri); }
+.confidence-bar { height:8px;background:rgba(0,0,0,.1);border-radius:8px;overflow:hidden;margin:8px 0; }
+.confidence-fill { height:100%;border-radius:8px;transition:width .6s ease;
+  background:linear-gradient(90deg,#8b5cf6,#22c55e); }
+.tip-list { list-style:none;padding:0;margin:12px 0 0; }
+.tip-list li { display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:.9rem; }
+.tip-list li:last-child { border:none; }
+.tip-icon { font-size:1rem;flex-shrink:0;margin-top:1px; }
+/* Loading spinner */
+.ai-loading { display:none;text-align:center;padding:40px 20px; }
+.ai-loading.show { display:block; }
+.ai-spinner {
+  width:56px;height:56px;border:4px solid rgba(139,92,246,.2);
+  border-top-color:#8b5cf6;border-radius:50%;
+  animation:spin .9s linear infinite;margin:0 auto 16px;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.ai-features { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px; }
+@media(max-width:480px){ .ai-features{grid-template-columns:1fr;} }
+.ai-feat { background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.15);border-radius:14px;padding:14px;text-align:center; }
+.ai-feat .icon { font-size:1.8rem;margin-bottom:6px; }
+.ai-feat .ftitle { font-size:.8rem;font-weight:700;color:var(--txt); }
+.ai-feat .fdesc  { font-size:.75rem;color:var(--mt);margin-top:2px; }
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<div class="ai-hero">
+  <div class="ai-hero-glow1"></div>
+  <div class="ai-hero-glow2"></div>
+  <div class="cn" style="position:relative;z-index:1">
+    <div class="ai-badge">
+      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      Sun'iy Intellekt
+    </div>
+    <h1>🤖 AI <span style="background:linear-gradient(135deg,#a78bfa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Narx Baholovchi</span></h1>
+    <p>Hayvon fotosini yuklang va bir zumda adolatli bozor narxini bilib oling</p>
+    <div class="ai-features">
+      <div class="ai-feat"><div class="icon">📸</div><div class="ftitle">1 ta foto yetarli</div><div class="fdesc">Zotni avtomatik aniqlaydi</div></div>
+      <div class="ai-feat"><div class="icon">💰</div><div class="ftitle">Adolatli narx</div><div class="fdesc">Bozor tahlili asosida</div></div>
+      <div class="ai-feat"><div class="icon">⚡</div><div class="ftitle">3 soniyada</div><div class="fdesc">Tezkor AI tahlil</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="pw" style="padding:32px 0 60px">
+  <div class="cn">
+    <div class="ai-grid">
+
+      <!-- LEFT: Form -->
+      <div>
+        <div class="ai-card">
+          <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:20px">📋 Ma'lumotlarni kiriting</h2>
+
+          <form method="POST" enctype="multipart/form-data" id="aiForm">
+
+            <!-- Photo upload zone -->
+            <div class="fgroup">
+              <label class="flabel">📸 Hayvon fotosi (ixtiyoriy, lekin tavsiya etiladi)</label>
+              <div class="upload-zone" id="uploadZone">
+                <input type="file" name="photo" id="photoInput" accept="image/*">
+                <div id="uploadPlaceholder">
+                  <div style="font-size:2.5rem;margin-bottom:8px">📷</div>
+                  <div style="font-weight:700;color:var(--txt)">Foto yuklash uchun bosing</div>
+                  <div style="font-size:.8rem;color:var(--mt);margin-top:4px">yoki shu yerga tashlang · JPG, PNG, WEBP · max 16MB</div>
+                </div>
+                <img id="previewImg" class="upload-preview" alt="preview">
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div class="fgroup">
+                <label class="flabel">🐾 Hayvon turi *</label>
+                <select name="animal_type" class="fctrl" required>
+                  <option value="">Tanlang</option>
+                  {% for slug,emoji,name in animal_types %}
+                  <option value="{{ name }}" {% if request.form.get('animal_type')==name %}selected{% endif %}>{{ emoji }} {{ name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="fgroup">
+                <label class="flabel">🧬 Zoti</label>
+                <input name="breed" class="fctrl" placeholder="Holstein, Gissar..." value="{{ request.form.get('breed','') }}">
+              </div>
+              <div class="fgroup">
+                <label class="flabel">🕐 Yoshi</label>
+                <input name="age" class="fctrl" placeholder="2 yosh, 6 oy..." value="{{ request.form.get('age','') }}">
+              </div>
+              <div class="fgroup">
+                <label class="flabel">⚖️ Vazni</label>
+                <input name="weight" class="fctrl" placeholder="350 kg" value="{{ request.form.get('weight','') }}">
+              </div>
+              <div class="fgroup">
+                <label class="flabel">♂️ Jinsi</label>
+                <select name="gender" class="fctrl">
+                  <option value="">Nomalum</option>
+                  <option {% if request.form.get('gender')=='Erkak' %}selected{% endif %}>Erkak</option>
+                  <option {% if request.form.get('gender')=="Urg'ochi" %}selected{% endif %}>Urg'ochi</option>
+                </select>
+              </div>
+              <div class="fgroup">
+                <label class="flabel">📍 Viloyat</label>
+                <select name="region" class="fctrl">
+                  <option value="">Tanlang</option>
+                  {% for r in regions %}<option {% if request.form.get('region')==r %}selected{% endif %}>{{ r }}</option>{% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="fgroup">
+              <label class="flabel">📄 Qo'shimcha ma'lumot</label>
+              <textarea name="description" class="fctrl" rows="3" placeholder="Sog'ligi, sog'ishi, maxsus xususiyatlari...">{{ request.form.get('description','') }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-p btn-lg" style="width:100%;background:linear-gradient(135deg,#7c3aed,#059669);border:none;font-size:1rem" id="submitBtn">
+              🤖 AI bilan narxni aniqlash
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- RIGHT: Result or info -->
+      <div>
+        <!-- Loading -->
+        <div class="ai-loading" id="aiLoading">
+          <div class="ai-spinner"></div>
+          <div style="font-weight:700;font-size:1rem;color:var(--txt)">AI tahlil qilmoqda...</div>
+          <div style="color:var(--mt);font-size:.85rem;margin-top:6px">Foto va ma'lumotlar tahlil qilinmoqda</div>
+        </div>
+
+        {% if error %}
+        <div class="ai-card" style="border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)">
+          <div style="font-size:1.5rem;margin-bottom:8px">❌</div>
+          <div style="font-weight:700;color:#ef4444">Xatolik yuz berdi</div>
+          <div style="font-size:.85rem;color:var(--mt);margin-top:6px">{{ error }}</div>
+          <div style="margin-top:12px;font-size:.8rem;color:var(--mt)">
+            💡 ANTHROPIC_API_KEY muhit o'zgaruvchisini tekshiring.
+          </div>
+        </div>
+        {% elif result %}
+        <!-- AI Result -->
+        <div class="ai-result" data-anim>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+            <div style="width:32px;height:32px;background:linear-gradient(135deg,#7c3aed,#059669);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px">🤖</div>
+            <div>
+              <div style="font-weight:800;font-size:.95rem">AI Tahlil Natijasi</div>
+              <div style="font-size:.75rem;color:var(--mt)">{{ result.get('animal_detected','') }}{% if result.get('breed_detected') %} · {{ result.get('breed_detected') }}{% endif %}</div>
+            </div>
+            <div style="margin-left:auto;text-align:right">
+              <div style="font-size:.7rem;color:var(--mt)">Ishonch</div>
+              <div style="font-weight:800;font-size:.9rem;color:#8b5cf6">{{ result.get('confidence',0) }}%</div>
+            </div>
+          </div>
+
+          <!-- Confidence bar -->
+          <div class="confidence-bar">
+            <div class="confidence-fill" style="width:{{ result.get('confidence',0) }}%"></div>
+          </div>
+
+          <!-- Main price -->
+          <div class="ai-price-main">
+            <div class="label">Tavsiya etilgan narx</div>
+            <div class="value">{{ "{:,}".format(result.get('recommended_price',0)) }} so'm</div>
+            <div class="range">{{ "{:,}".format(result.get('min_price',0)) }} — {{ "{:,}".format(result.get('max_price',0)) }} so'm oralig'ida</div>
+          </div>
+
+          <!-- Price range breakdown -->
+          <div class="price-range-bar">
+            <div class="prb-item">
+              <div class="lbl">Minimal</div>
+              <div class="val" style="color:#059669">{{ "{:,}".format(result.get('min_price',0)) }}</div>
+            </div>
+            <div class="prb-item">
+              <div class="lbl">Optimal</div>
+              <div class="val">{{ "{:,}".format(result.get('recommended_price',0)) }}</div>
+            </div>
+            <div class="prb-item">
+              <div class="lbl">Maksimal</div>
+              <div class="val" style="color:#7c3aed">{{ "{:,}".format(result.get('max_price',0)) }}</div>
+            </div>
+          </div>
+
+          <!-- Reasoning -->
+          {% if result.get('reasoning') %}
+          <div style="background:var(--bg2);border-radius:12px;padding:14px;margin-bottom:14px;font-size:.88rem;line-height:1.6;color:var(--txt)">
+            <div style="font-weight:700;margin-bottom:6px;font-size:.8rem;color:var(--mt);text-transform:uppercase;letter-spacing:.4px">📊 Tahlil</div>
+            {{ result.get('reasoning') }}
+          </div>
+          {% endif %}
+
+          <!-- Tips -->
+          {% if result.get('tips') %}
+          <div style="font-weight:700;font-size:.85rem;color:var(--mt);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">💡 Sotish maslahatlari</div>
+          <ul class="tip-list">
+            {% for tip in result.get('tips',[]) %}
+            <li><span class="tip-icon">✅</span><span>{{ tip }}</span></li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+
+          <!-- CTA -->
+          {% if session.get('uid') %}
+          <a href="/listing/new" class="btn btn-p btn-sm" style="width:100%;display:block;text-align:center;margin-top:16px;background:linear-gradient(135deg,#7c3aed,#059669);border:none">
+            ➕ Shu narxda e'lon joylash
+          </a>
+          {% else %}
+          <a href="/login" class="btn btn-o btn-sm" style="width:100%;display:block;text-align:center;margin-top:16px">
+            🔑 E'lon joylash uchun kiring
+          </a>
+          {% endif %}
+        </div>
+        {% else %}
+        <!-- Empty state -->
+        <div class="ai-card" style="text-align:center;padding:48px 24px">
+          <div style="font-size:4rem;margin-bottom:16px">🤖</div>
+          <div style="font-weight:800;font-size:1.1rem;margin-bottom:8px">AI tahlilga tayyor</div>
+          <div style="color:var(--mt);font-size:.9rem;line-height:1.6;max-width:300px;margin:0 auto">
+            Chap tomondagi formani to'ldiring va AI hayvonning adolatli narxini aniqlaydi
+          </div>
+          <div style="margin-top:28px;display:flex;flex-direction:column;gap:10px;text-align:left;max-width:280px;margin-left:auto;margin-right:auto">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15);border-radius:12px;font-size:.85rem">
+              <span>📸</span><span>Foto yuklang — zot avtomatik aniqlanadi</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);border-radius:12px;font-size:.85rem">
+              <span>💰</span><span>Bozor narxi va tavsiyalar olasiz</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:12px;font-size:.85rem">
+              <span>📋</span><span>Sotish maslahatlari beriladi</span>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Photo upload preview
+const photoInput = document.getElementById('photoInput');
+const previewImg = document.getElementById('previewImg');
+const placeholder = document.getElementById('uploadPlaceholder');
+const uploadZone  = document.getElementById('uploadZone');
+const aiForm      = document.getElementById('aiForm');
+const submitBtn   = document.getElementById('submitBtn');
+const aiLoading   = document.getElementById('aiLoading');
+
+function showPreview(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    previewImg.src = e.target.result;
+    previewImg.classList.add('show');
+    placeholder.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+photoInput.addEventListener('change', e => showPreview(e.target.files[0]));
+
+// Drag & drop
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    photoInput.files = dt.files;
+    showPreview(file);
+  }
+});
+
+// Show loading on submit
+aiForm.addEventListener('submit', () => {
+  submitBtn.disabled = true;
+  submitBtn.textContent = '⏳ Tahlil qilinmoqda...';
+  aiLoading.classList.add('show');
+  setTimeout(() => {
+    submitBtn.disabled = false;
+    submitBtn.textContent = '🤖 AI bilan narxni aniqlash';
+  }, 35000);
+});
+</script>
+{% endblock %}

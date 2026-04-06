@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}{% block title %}Yangi e'lon{% endblock %}
+{% block content %}
+<div class="pw">
+<div class="cn" style="padding-top:32px;padding-bottom:60px;max-width:760px">
+  <h1 style="font-size:30px;font-weight:800;margin-bottom:6px" data-anim>➕ Yangi <span class="gt">e'lon</span> joylash</h1>
+  <p style="color:var(--mt);margin-bottom:28px" data-anim>2 daqiqada e'lon joylaing va xaridorlar bilan bog'laning</p>
+  <div class="sc afu">
+    <form method="post">
+      <div class="fgroup"><label class="flabel">📝 E'lon sarlavhasi *</label><input name="title" class="fctrl" placeholder="Masalan: Sut sigiri — Holstein zoti" required/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="fgroup"><label class="flabel">🐾 Hayvon turi *</label>
+          <select name="animal_slug" class="fctrl" required>
+            <option value="">Tanlang</option>
+            {% for slug,emoji,name in animal_types %}<option value="{{ slug }}">{{ emoji }} {{ name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="fgroup"><label class="flabel">💰 Narx (so'm) *</label><input name="price" type="number" class="fctrl" placeholder="12000000" required/></div>
+        <div class="fgroup"><label class="flabel">📍 Viloyat *</label>
+          <select name="region" class="fctrl" required>
+            <option value="">Tanlang</option>
+            {% for r in regions %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="fgroup"><label class="flabel">🏘 Tuman</label><input name="district" class="fctrl" placeholder="Tuman nomi"/></div>
+        <div class="fgroup"><label class="flabel">🔢 Soni</label><input name="count" type="number" value="1" min="1" class="fctrl"/></div>
+        <div class="fgroup"><label class="flabel">🕐 Yoshi</label><input name="age" class="fctrl" placeholder="3 yosh, 2-4 yosh..."/></div>
+        <div class="fgroup"><label class="flabel">♂️ Jinsi</label>
+          <select name="gender" class="fctrl"><option value="">Nomalum</option><option>Erkak</option><option>Urg'ochi</option><option>Aralash</option></select>
+        </div>
+        <div class="fgroup"><label class="flabel">🧬 Zoti</label><input name="breed" class="fctrl" placeholder="Holstein, Gissar..."/></div>
+        <div class="fgroup"><label class="flabel">⚖️ Vazni</label><input name="weight" class="fctrl" placeholder="350 kg"/></div>
+      </div>
+      <div class="fgroup"><label class="flabel">📄 Tavsif</label><textarea name="description" class="fctrl" rows="4" placeholder="Hayvon haqida qo'shimcha ma'lumot..."></textarea></div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button type="submit" class="btn btn-p btn-lg">🚀 E'lonni joylash</button>
+        <a href="/my-listings" class="btn btn-o btn-lg">Bekor qilish</a>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+<style>@media(max-width:600px){form > div[style*="grid"]{grid-template-columns:1fr!important}}</style>
+{% endblock %}

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>{% block title %}AnimalsMarket{% endblock %} — Animals savdosi platformasi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/css/style.css"/>
+{% block head %}{% endblock %}
+</head>
+<body>
+
+<!-- ANIMATED CURSOR -->
+<canvas id="pawCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999"></canvas>
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+<div id="toast"></div>
+
+<!-- INTRO VIDEO OVERLAY -->
+<div id="introOverlay" class="intro-overlay">
+  <div class="intro-bg-particles" id="introParts"></div>
+  <div class="intro-content">
+    <div class="intro-animals" id="introAnimals">
+      <span class="ia">🐄</span><span class="ia">🐑</span><span class="ia">🐴</span>
+      <span class="ia">🐐</span><span class="ia">🐓</span><span class="ia">🐇</span>
+    </div>
+    <div class="intro-logo-icon">🐄</div>
+    <h1 class="intro-title">Animals<span>Market</span></h1>
+    <p class="intro-subtitle" id="introSub">O'zbekistondagi Animals savdosi platformasi</p>
+    <div class="intro-divider"></div>
+    <div class="intro-features">
+      <div class="if-item">✅ <span>Tasdiqlangan sotuvchilar</span></div>
+      <div class="if-item">🔒 <span>Xavfsiz savdo</span></div>
+      <div class="if-item">📍 <span>14 viloyat</span></div>
+      <div class="if-item">🩺 <span>Veterinarlar</span></div>
+    </div>
+    <div class="intro-counters">
+      <div class="ic-item"><div class="ic-n" id="ic1">0</div><div class="ic-l">E'lonlar</div></div>
+      <div class="ic-sep">|</div>
+      <div class="ic-item"><div class="ic-n" id="ic2">0</div><div class="ic-l">Sotuvchilar</div></div>
+      <div class="ic-sep">|</div>
+      <div class="ic-item"><div class="ic-n" id="ic3">0</div><div class="ic-l">Viloyat</div></div>
+    </div>
+    <div class="intro-pb-wrap"><div class="intro-pb" id="introPb"></div></div>
+    <button class="intro-skip-btn" id="introSkip">O'tkazib yuborish ›</button>
+  </div>
+</div>
+
+<!-- RATING MODAL -->
+<div id="ratingModal" class="rm-overlay" style="display:none" onclick="if(event.target===this)closeRating()">
+  <div class="rm-box">
+    <button class="rm-close" onclick="closeRating()">✕</button>
+    <div id="rmContent"></div>
+  </div>
+</div>
+
+<!-- Flash messages -->
+<div class="fl-wrap">
+{% with msgs = get_flashed_messages(with_categories=true) %}
+  {% for cat,msg in msgs %}
+  <div class="fl fl-{{ cat }}">
+    <span>{% if cat=='success' %}✅{% elif cat=='error' %}❌{% elif cat=='warning' %}⚠{% else %}ℹ{% endif %}</span>
+    <span>{{ msg }}</span>
+    <button class="fl-x">✕</button>
+  </div>
+  {% endfor %}
+{% endwith %}
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="mainNav">
+  <div class="nv-in">
+    <a href="/" class="nv-logo">
+      <div class="nv-logo-ic">🐄</div>
+      <span>Animals<span class="gt">Market</span></span>
+    </a>
+
+    <div class="nv-links">
+      <a href="/" class="{% if request.path=='/' %}on{% endif %}" data-i18n="nav_home">🏠 Bosh sahifa</a>
+      <a href="/catalog" class="{% if '/catalog' in request.path and '/delivery' not in request.path %}on{% endif %}" data-i18n="nav_catalog">📋 Katalog</a>
+      <a href="/delivery" class="{% if '/delivery' in request.path %}on{% endif %}" data-i18n="nav_delivery">🚚 Yetkazib berish</a>
+
+      <div class="nvd">
+        <button class="nvd-btn" data-i18n="nav_buyer">🛒 Xaridor ▾</button>
+        <div class="nvd-menu">
+          <div class="nvd-head" data-i18n="buyer_menu">Xaridor menyusi</div>
+          <a href="/catalog" class="nvd-item">🔍 <span data-i18n="browse_listings">E'lonlarni ko'rish</span></a>
+          <a href="/catalog?sort=price_asc" class="nvd-item">💰 <span data-i18n="by_price">Narx bo'yicha</span></a>
+          <a href="/catalog?sort=popular" class="nvd-item">🔥 <span data-i18n="popular">Mashhur</span></a>
+          <a href="/favorites" class="nvd-item">❤️ <span data-i18n="favorites">Sevimlilar</span></a>
+          <div class="nvd-div"></div>
+          <a href="/about" class="nvd-item">ℹ️ <span data-i18n="how_it_works">Qanday ishlaydi</span></a>
+        </div>
+      </div>
+
+      <div class="nvd">
+        <button class="nvd-btn" data-i18n="nav_seller">🏪 Sotuvchi ▾</button>
+        <div class="nvd-menu">
+          <div class="nvd-head" data-i18n="seller_menu">Sotuvchi menyusi</div>
+          <a href="/listing/new" class="nvd-item">➕ <span data-i18n="add_listing">E'lon joylash</span></a>
+          <a href="/my-listings" class="nvd-item">📦 <span data-i18n="my_listings">Mening e'lonlarim</span></a>
+          <a href="/messages" class="nvd-item">💬 <span data-i18n="messages">Xabarlar</span></a>
+          <div class="nvd-div"></div>
+          <a href="#" onclick="openRating('seller');return false" class="nvd-item">⭐ <span data-i18n="seller_rating">Sotuvchi reytingi</span></a>
+        </div>
+      </div>
+
+      <div class="nvd">
+        <button class="nvd-btn" data-i18n="nav_vet">🩺 Veterinar ▾</button>
+        <div class="nvd-menu">
+          <div class="nvd-head" data-i18n="vet_menu">Veterinar menyusi</div>
+          <a href="/contact" class="nvd-item">📞 <span data-i18n="find_vet">Veterinar topish</span></a>
+          <a href="#" onclick="openRating('vet');return false" class="nvd-item">⭐ <span data-i18n="vet_rating">Veterinar reytingi</span></a>
+          <div class="nvd-div"></div>
+          <a href="/about" class="nvd-item">📚 <span data-i18n="vet_tips">Maslahatlar</span></a>
+        </div>
+      </div>
+
+      <a href="/about" class="{% if '/about' in request.path %}on{% endif %}" data-i18n="nav_about">ℹ️ Haqimizda</a>
+    </div>
+
+    <div class="nv-srch">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="srchInp" placeholder="Hayvon qidirish..." data-i18n-ph="search_ph"/>
+      <div class="srch-dd" id="srchDd"></div>
+    </div>
+
+    <div class="nv-acts">
+      <!-- Language -->
+      <div class="ls" id="lsWrap">
+        <button class="ls-btn" onclick="toggleLS()">
+          <span id="lsFlag">🇺🇿</span>
+          <span id="lsCode">UZ</span>
+          <span style="font-size:9px">▾</span>
+        </button>
+        <div class="ls-menu" id="lsMenu">
+          <button class="ls-opt" onclick="setLang('uz')">🇺🇿 O'zbek</button>
+          <button class="ls-opt" onclick="setLang('ru')">🇷🇺 Русский</button>
+          <button class="ls-opt" onclick="setLang('en')">🇬🇧 English</button>
+        </div>
+      </div>
+
+      <!-- Color Accent Picker -->
+      <div class="accent-wrap" id="accentWrap">
+        <button class="accent-btn" onclick="toggleAccent()" title="Rang mavzusi" id="accentMainBtn">
+          <span id="accentDot" style="width:14px;height:14px;border-radius:50%;background:var(--g);display:inline-block;box-shadow:0 0 6px var(--g)"></span>
+        </button>
+        <div class="accent-menu" id="accentMenu">
+          <div style="font-size:11px;font-weight:700;color:var(--mt);padding:6px 10px 4px;text-transform:uppercase;letter-spacing:.5px">Rang tanlang</div>
+          <button class="accent-opt" data-accent="green"  onclick="setAccent('green')" >🟢 Yashil</button>
+          <button class="accent-opt" data-accent="blue"   onclick="setAccent('blue')"  >🔵 Ko'k</button>
+          <button class="accent-opt" data-accent="purple" onclick="setAccent('purple')">🟣 Binafsha</button>
+          <button class="accent-opt" data-accent="orange" onclick="setAccent('orange')">🟠 To'q sariq</button>
+          <button class="accent-opt" data-accent="red"    onclick="setAccent('red')"   >🔴 Qizil</button>
+          <button class="accent-opt" data-accent="teal"   onclick="setAccent('teal')"  >🩵 Moviy-yashil</button>
+        </div>
+      </div>
+
+      <!-- Theme -->
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Tema">
+        <span id="themeIcon">☀️</span>
+      </button>
+
+      {% if me %}
+        <a href="/listing/new" class="nbtn nbtn-gr">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          <span data-i18n="add_ad">E'lon</span>
+        </a>
+        <a href="/favorites" class="nbtn nbtn-out" style="padding:8px 12px;position:relative">❤️ <span id="favCnt">{{ fav_count }}</span></a>
+        <a href="/messages" class="nbtn nbtn-out" style="padding:8px 12px;position:relative">
+          💬{% if unread %}<span class="nv-badge">{{ unread }}</span>{% endif %}
+        </a>
+        <div class="dd-wrap">
+          <button onclick="toggleDd('userDd')" class="nv-ava">{{ (me.avatar_letter or (me.full_name or me.username)[0])|upper }}</button>
+          <div class="dd-menu" id="userDd">
+            <div style="padding:14px 16px 10px;border-bottom:1px solid var(--bdr)">
+              <div style="font-weight:700;font-size:15px;color:var(--dk)">{{ me.full_name or me.username }}</div>
+              <div style="font-size:12px;color:var(--mt);margin-top:2px">@{{ me.username }}{% if me.is_verified %} · ✅{% endif %}</div>
+              <div style="font-size:12px;color:#f59e0b;margin-top:3px">⭐ {{ "%.1f"|format(me.rating) }}</div>
+            </div>
+            <a href="/profile" class="dd-item">👤 <span data-i18n="profile">Profil</span></a>
+            <a href="/my-listings" class="dd-item">📋 <span data-i18n="my_listings">E'lonlarim</span></a>
+            <a href="/favorites" class="dd-item">❤️ <span data-i18n="favorites">Sevimlilar</span></a>
+            <a href="/messages" class="dd-item">💬 <span data-i18n="messages">Xabarlar</span>{% if unread %}<span class="badge b-rd" style="margin-left:auto">{{ unread }}</span>{% endif %}</a>
+            <div class="dd-div"></div>
+            <a href="#" onclick="openRating('my');return false" class="dd-item">⭐ <span data-i18n="my_rating">Mening reytingim</span></a>
+            {% if me.is_admin %}<div class="dd-div"></div><a href="/admin/" class="dd-item">⚙️ <span data-i18n="admin_panel">Admin panel</span></a>{% endif %}
+            <div class="dd-div"></div>
+            <a href="/logout" class="dd-item" style="color:#dc2626">🚪 <span data-i18n="logout">Chiqish</span></a>
+          </div>
+        </div>
+      {% else %}
+        <a href="/login" class="nbtn nbtn-out" data-i18n="login">Kirish</a>
+        <a href="/register" class="nbtn nbtn-gr" data-i18n="register">Ro'yxat</a>
+      {% endif %}
+      <button id="nvTog" style="display:none;background:none;border:none;font-size:22px;padding:4px;cursor:pointer;color:var(--dk)">☰</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
+<div id="nvMob" class="nv-mob">
+  <a href="/" data-i18n="nav_home">🏠 Bosh sahifa</a>
+  <a href="/catalog" data-i18n="nav_catalog">📋 Katalog</a>
+  <a href="/delivery" data-i18n="nav_delivery">🚚 Yetkazib berish</a>
+  <a href="/listing/new" data-i18n="add_listing">➕ E'lon joylash</a>
+  <a href="/about" data-i18n="nav_about">ℹ️ Haqimizda</a>
+  <a href="/contact">📞 Aloqa</a>
+  <div class="nv-mob-lang">
+    <button onclick="setLang('uz')">🇺🇿 UZ</button>
+    <button onclick="setLang('ru')">🇷🇺 RU</button>
+    <button onclick="setLang('en')">🇬🇧 EN</button>
+  </div>
+  <div style="height:1px;background:var(--bdr);margin:6px 0"></div>
+  {% if me %}
+  <a href="/profile" data-i18n="profile">👤 Profil</a>
+  <a href="/logout" style="color:#dc2626" data-i18n="logout">🚪 Chiqish</a>
+  {% else %}
+  <div style="display:flex;gap:10px">
+    <a href="/login" class="btn btn-o" style="flex:1;justify-content:center" data-i18n="login">Kirish</a>
+    <a href="/register" class="btn btn-p" style="flex:1;justify-content:center" data-i18n="register">Ro'yxat</a>
+  </div>
+  {% endif %}
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="footer">
+  <div class="footer-in">
+    <div class="ft-grid">
+      <div>
+        <div class="ft-logo">🐄 AnimalsMarket</div>
+        <p class="ft-desc" data-i18n="footer_desc">O'zbekistonda hayvonlar savdosi uchun zamonaviy va ishonchli onlayn platforma.</p>
+        <div class="ft-soc"><a href="#">✈️</a><a href="#">📷</a><a href="#">📘</a><a href="#">▶️</a></div>
+      </div>
+      <div>
+        <p class="ft-tit" data-i18n="animal_types">Hayvon turlari</p>
+        <div class="ft-lnks">
+          <a href="/catalog?type=sigir">🐄 Sigir</a>
+          <a href="/catalog?type=qoy">🐑 Qo'y</a>
+          <a href="/catalog?type=ot">🐴 Ot</a>
+          <a href="/catalog?type=echki">🐐 Echki</a>
+          <a href="/catalog?type=tovuq">🐓 Parrandalar</a>
+          <a href="/catalog" data-i18n="more">Ko'proq →</a>
+        </div>
+      </div>
+      <div>
+        <p class="ft-tit" data-i18n="site_nav">Sayt</p>
+        <div class="ft-lnks">
+          <a href="/" data-i18n="nav_home">Bosh sahifa</a>
+          <a href="/catalog" data-i18n="nav_catalog">Katalog</a>
+          <a href="/delivery" data-i18n="nav_delivery">🚚 Yetkazib berish</a>
+          <a href="/listing/new" data-i18n="add_listing">E'lon joylash</a>
+          <a href="/about" data-i18n="nav_about">Haqimizda</a>
+        </div>
+      </div>
+      <div>
+        <p class="ft-tit" data-i18n="contacts">Aloqa</p>
+        <div class="ft-lnks">
+          <span>📞 +998 90 000 00 00</span>
+          <span>📧 info@hayvonmarket.uz</span>
+          <span>📍 Toshkent, O'zbekiston</span>
+          <span>🕐 24/7</span>
+        </div>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <span>© {{ now.year }} AnimalsMarket. <span data-i18n="rights">Barcha huquqlar himoyalangan.</span></span>
+      <span style="color:#4ade80">🌿 O'zbek fermerlari uchun</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/static/js/main.js"></script>
+<script>
+'use strict';
+
+// ── NAV ──────────────────────────────────────────────
+function toggleDd(id){
+  const m=document.getElementById(id);
+  document.querySelectorAll('.dd-menu').forEach(x=>{if(x.id!==id)x.classList.remove('show')});
+  m.classList.toggle('show');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.dd-wrap')) document.querySelectorAll('.dd-menu').forEach(x=>x.classList.remove('show'));
+  if(!e.target.closest('#lsWrap')) document.getElementById('lsMenu')?.classList.remove('show');
+  if(!e.target.closest('.nvd')) document.querySelectorAll('.nvd-menu').forEach(x=>x.classList.remove('show'));
+});
+document.querySelectorAll('.nvd').forEach(d=>{
+  d.querySelector('.nvd-btn').addEventListener('click',e=>{
+    e.stopPropagation();
+    const m=d.querySelector('.nvd-menu');
+    document.querySelectorAll('.nvd-menu').forEach(x=>{if(x!==m)x.classList.remove('show')});
+    m.classList.toggle('show');
+  });
+});
+const tog=document.getElementById('nvTog'),mob=document.getElementById('nvMob');
+if(tog)tog.addEventListener('click',()=>mob.classList.toggle('open'));
+document.addEventListener('click',e=>{
+  if(mob&&!e.target.closest('#nvTog')&&!e.target.closest('#nvMob'))mob.classList.remove('open');
+});
+
+// ── TRANSLATIONS ────────────────────────────────────────────────────────────
+const T={
+  uz:{
+    nav_home:'🏠 Bosh sahifa',nav_catalog:'📋 Katalog',nav_buyer:'🛒 Xaridor ▾',
+    nav_seller:'🏪 Sotuvchi ▾',nav_vet:'🩺 Veterinar ▾',nav_about:'ℹ️ Haqimizda',
+    add_listing:"➕ E'lon joylash",buyer_menu:'Xaridor menyusi',seller_menu:'Sotuvchi menyusi',
+    vet_menu:'Veterinar menyusi',browse_listings:"E'lonlarni ko'rish",by_price:"Narx bo'yicha",
+    popular:'Mashhur',favorites:'Sevimlilar',how_it_works:'Qanday ishlaydi',
+    add_ad:"E'lon",my_listings:"Mening e'lonlarim",messages:'Xabarlar',
+    seller_rating:'Sotuvchi reytingi',find_vet:'Veterinar topish',vet_rating:'Veterinar reytingi',
+    vet_tips:'Maslahatlar',profile:'Profil',my_rating:'Mening reytingim',
+    admin_panel:'Admin panel',logout:'Chiqish',login:'Kirish',register:"Ro'yxat",
+    animal_types:'Hayvon turlari',site_nav:'Sayt',contacts:'Aloqa',more:"Ko'proq →",
+    rights:'Barcha huquqlar himoyalangan.',
+    footer_desc:"O'zbekistonda hayvonlar savdosi uchun zamonaviy va ishonchli onlayn platforma.",
+    skip:"O'tkazib yuborish ›",search_ph:'Hayvon qidirish...',
+    login_title:'Tizimga kirish',login_sub:"AnimalsMarket'ga xush kelibsiz!",
+    uname_l:'👤 Login',pass_l:'🔒 Parol',login_btn:'Kirish →',
+    no_acc:"Hisobingiz yo'qmi?",reg_link:"Ro'yxatdan o'ting",
+    reg_title:"Ro'yxatdan o'tish",reg_sub:"Bepul hisob oching va savdoni boshlang!",
+    fn_l:"🙍 To'liq ism *",ph_l:'📞 Telefon *',reg_l:'📍 Viloyat *',
+    reg_btn:"Ro'yxatdan o'tish →",have_acc:'Hisobingiz bormi?',
+    conf_pass:'🔒 Parolni takrorlang *',sel_reg:'Tanlang',
+    rt_seller:'🏪 Sotuvchilar reytingi',rt_vet:'🩺 Veterinarlar reytingi',rt_my:'⭐ Mening reytingim',
+    nav_delivery:'🚚 Yetkazib berish',
+    delivery_title:'Yetkazib berish katalogi',delivery_sub:'Viloyat va tumanlar bo\'yicha hayvon yetkazib berish',
+    sel_region:'Viloyat tanlang',sel_district:'Tuman/shahar tanlang',all_regions:'Barcha viloyatlar',all_districts:'Barcha tumanlar',
+    cat_title:'Katalog',cat_sub:'ta e\'lon topildi',all_types:'Barcha turlar',
+    search_btn:'🔍 Qidirish',clear_btn:'✕ Tozalash',sort_label:'Saralash:',
+    sort_new:'Yangi',sort_cheap:'Arzon avval',sort_exp:'Qimmat avval',sort_pop:'Mashhur',
+    no_results:'E\'lonlar topilmadi',no_results_sub:'Boshqa kalit so\'z yoki filtrlarni sinab ko\'ring',all_ads:'Barcha e\'lonlar',
+    min_price:'Min narx',max_price:'Max narx',
+  },
+  ru:{
+    nav_home:'🏠 Главная',nav_catalog:'📋 Каталог',nav_buyer:'🛒 Покупатель ▾',
+    nav_seller:'🏪 Продавец ▾',nav_vet:'🩺 Ветеринар ▾',nav_about:'ℹ️ О нас',
+    add_listing:'➕ Добавить объявление',buyer_menu:'Меню покупателя',seller_menu:'Меню продавца',
+    vet_menu:'Меню ветеринара',browse_listings:'Просмотр объявлений',by_price:'По цене',
+    popular:'Популярные',favorites:'Избранное',how_it_works:'Как это работает',
+    add_ad:'Объявление',my_listings:'Мои объявления',messages:'Сообщения',
+    seller_rating:'Рейтинг продавцов',find_vet:'Найти ветеринара',vet_rating:'Рейтинг ветеринаров',
+    vet_tips:'Советы',profile:'Профиль',my_rating:'Мой рейтинг',
+    admin_panel:'Панель администратора',logout:'Выйти',login:'Войти',register:'Регистрация',
+    animal_types:'Виды животных',site_nav:'Сайт',contacts:'Контакты',more:'Больше →',
+    rights:'Все права защищены.',
+    footer_desc:'Современная и надёжная онлайн-платформа для торговли животными в Узбекистане.',
+    skip:'Пропустить ›',search_ph:'Поиск животных...',
+    login_title:'Вход в систему',login_sub:'Добро пожаловать на AnimalsMarket!',
+    uname_l:'👤 Логин',pass_l:'🔒 Пароль',login_btn:'Войти →',
+    no_acc:'Нет аккаунта?',reg_link:'Зарегистрироваться',
+    reg_title:'Регистрация',reg_sub:'Создайте бесплатный аккаунт и начните торговлю!',
+    fn_l:'🙍 Полное имя *',ph_l:'📞 Телефон *',reg_l:'📍 Регион *',
+    reg_btn:'Зарегистрироваться →',have_acc:'Уже есть аккаунт?',
+    conf_pass:'🔒 Подтвердите пароль *',sel_reg:'Выберите',
+    rt_seller:'🏪 Рейтинг продавцов',rt_vet:'🩺 Рейтинг ветеринаров',rt_my:'⭐ Мой рейтинг',
+    nav_delivery:'🚚 Доставка',
+    delivery_title:'Каталог доставки',delivery_sub:'Доставка животных по всем районам и улицам Узбекистана',
+    sel_region:'Выберите область',sel_district:'Выберите район/город',all_regions:'Все области',all_districts:'Все районы',
+    cat_title:'Каталог',cat_sub:'объявлений найдено',all_types:'Все виды',
+    search_btn:'🔍 Поиск',clear_btn:'✕ Сбросить',sort_label:'Сортировка:',
+    sort_new:'Новые',sort_cheap:'Сначала дешевые',sort_exp:'Сначала дорогие',sort_pop:'Популярные',
+    no_results:'Объявления не найдены',no_results_sub:'Попробуйте другие ключевые слова или фильтры',all_ads:'Все объявления',
+    min_price:'Мин. цена',max_price:'Макс. цена',
+  },
+  en:{
+    nav_home:'🏠 Home',nav_catalog:'📋 Catalog',nav_buyer:'🛒 Buyer ▾',
+    nav_seller:'🏪 Seller ▾',nav_vet:'🩺 Veterinarian ▾',nav_about:'ℹ️ About',
+    add_listing:'➕ Add Listing',buyer_menu:'Buyer Menu',seller_menu:'Seller Menu',
+    vet_menu:'Veterinarian Menu',browse_listings:'Browse Listings',by_price:'By Price',
+    popular:'Popular',favorites:'Favorites',how_it_works:'How It Works',
+    add_ad:'Ad',my_listings:'My Listings',messages:'Messages',
+    seller_rating:'Seller Ratings',find_vet:'Find Veterinarian',vet_rating:'Vet Ratings',
+    vet_tips:'Tips',profile:'Profile',my_rating:'My Rating',
+    admin_panel:'Admin Panel',logout:'Logout',login:'Login',register:'Register',
+    animal_types:'Animal Types',site_nav:'Site',contacts:'Contact',more:'More →',
+    rights:'All rights reserved.',
+    footer_desc:'A modern and trusted online platform for livestock trading in Uzbekistan.',
+    skip:'Skip ›',search_ph:'Search animals...',
+    login_title:'Sign In',login_sub:'Welcome to AnimalsMarket!',
+    uname_l:'👤 Username',pass_l:'🔒 Password',login_btn:'Sign In →',
+    no_acc:'No account?',reg_link:'Register here',
+    reg_title:'Register',reg_sub:'Create a free account and start trading!',
+    fn_l:'🙍 Full Name *',ph_l:'📞 Phone *',reg_l:'📍 Region *',
+    reg_btn:'Register →',have_acc:'Already have account?',
+    conf_pass:'🔒 Confirm Password *',sel_reg:'Select',
+    rt_seller:'🏪 Seller Ratings',rt_vet:'🩺 Veterinarian Ratings',rt_my:'⭐ My Rating',
+    nav_delivery:'🚚 Delivery',
+    delivery_title:'Delivery Catalog',delivery_sub:'Animal delivery across all regions and streets of Uzbekistan',
+    sel_region:'Select Region',sel_district:'Select District/City',all_regions:'All Regions',all_districts:'All Districts',
+    cat_title:'Catalog',cat_sub:'listings found',all_types:'All Types',
+    search_btn:'🔍 Search',clear_btn:'✕ Clear',sort_label:'Sort:',
+    sort_new:'Newest',sort_cheap:'Cheapest first',sort_exp:'Expensive first',sort_pop:'Popular',
+    no_results:'No listings found',no_results_sub:'Try different keywords or filters',all_ads:'All listings',
+    min_price:'Min price',max_price:'Max price',
+  }
+};
+
+let CL = localStorage.getItem('hm_lang')||'uz';
+const FLAGS={uz:'🇺🇿',ru:'🇷🇺',en:'🇬🇧'}, CODES={uz:'UZ',ru:'RU',en:'EN'};
+
+function applyLang(lang){
+  const t=T[lang]||T.uz;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const v=t[el.getAttribute('data-i18n')]; if(v)el.textContent=v;
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const v=t[el.getAttribute('data-i18n-ph')]; if(v)el.placeholder=v;
+  });
+  const lsFlag=document.getElementById('lsFlag');
+  const lsCode=document.getElementById('lsCode');
+  if(lsFlag)lsFlag.textContent=FLAGS[lang];
+  if(lsCode)lsCode.textContent=CODES[lang];
+  document.querySelectorAll('.ls-opt').forEach(b=>b.classList.toggle('active',
+    (b.getAttribute('onclick')||'').includes("'"+lang+"'")));
+  document.documentElement.lang=lang;
+}
+
+function setLang(lang){
+  CL=lang; localStorage.setItem('hm_lang',lang); applyLang(lang);
+  document.getElementById('lsMenu').classList.remove('show');
+  document.getElementById('nvMob').classList.remove('open');
+  // Store for auth pages
+  window._currentLang=lang;
+}
+function toggleLS(){document.getElementById('lsMenu').classList.toggle('show');}
+applyLang(CL);
+window._currentLang=CL;
+
+// ── THEME ──────────────────────────────────────────────
+function toggleTheme(){
+  const h=document.documentElement;
+  const dark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',dark?'light':'dark');
+  localStorage.setItem('hm_theme',dark?'light':'dark');
+  document.getElementById('themeIcon').textContent=dark?'☀️':'🌙';
+}
+const st=localStorage.getItem('hm_theme');
+if(st){document.documentElement.setAttribute('data-theme',st); document.getElementById('themeIcon').textContent=st==='dark'?'🌙':'☀️';}
+
+// ── ACCENT COLOR SYSTEM ────────────────────────────────────────
+const ACCENTS={
+  green: { g:'#22c55e', gd:'#16a34a', gl:'#dcfce7', gs:'34,197,94' },
+  blue:  { g:'#3b82f6', gd:'#1d4ed8', gl:'#dbeafe', gs:'59,130,246' },
+  purple:{ g:'#a855f7', gd:'#7e22ce', gl:'#f3e8ff', gs:'168,85,247' },
+  orange:{ g:'#f97316', gd:'#c2410c', gl:'#ffedd5', gs:'249,115,22' },
+  red:   { g:'#ef4444', gd:'#b91c1c', gl:'#fee2e2', gs:'239,68,68' },
+  teal:  { g:'#14b8a6', gd:'#0f766e', gl:'#ccfbf1', gs:'20,184,166' },
+};
+
+function applyAccent(name){
+  const a=ACCENTS[name]||ACCENTS.green;
+  const r=document.documentElement;
+  r.style.setProperty('--g', a.g);
+  r.style.setProperty('--gd', a.gd);
+  r.style.setProperty('--gl', a.gl);
+  r.style.setProperty('--gs', a.gs);
+  const dot=document.getElementById('accentDot');
+  if(dot){dot.style.background=a.g; dot.style.boxShadow=`0 0 8px ${a.g}`;}
+  document.querySelectorAll('.accent-opt').forEach(b=>
+    b.classList.toggle('active', b.dataset.accent===name));
+}
+function setAccent(name){
+  localStorage.setItem('hm_accent', name);
+  applyAccent(name);
+  document.getElementById('accentMenu').classList.remove('show');
+}
+function toggleAccent(){
+  document.getElementById('accentMenu').classList.toggle('show');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#accentWrap')) document.getElementById('accentMenu')?.classList.remove('show');
+});
+const savedAccent=localStorage.getItem('hm_accent')||'green';
+applyAccent(savedAccent);
+
+// ── RATING MODAL ───────────────────────────────────────
+const SEL=[
+  {n:'Sardor Abdullayev',av:'S',reg:'Samarqand',sales:23,r:4.9,rev:12,badge:'✅',bio:"10 yillik tajriba"},
+  {n:'Malika Yusupova',av:'M',reg:'Buxoro',sales:31,r:4.8,rev:18,badge:'✅',bio:'Oilaviy ferma'},
+  {n:'Aziz Karimov',av:'A',reg:'Toshkent vil.',sales:15,r:4.7,rev:9,badge:'✅',bio:"Qo'y va echki"},
+  {n:'Bobur Toshmatov',av:'B',reg:"Farg'ona",sales:8,r:4.6,rev:5,badge:'',bio:'Otchilik'},
+];
+const VETS=[
+  {n:'Dr. Kamoliddin Nazarov',av:'K',reg:'Toshkent',exp:'15 yil',r:4.9,rev:34,spec:'Yirik hayvonlar',ph:'+998901234567'},
+  {n:'Dr. Nilufar Rahimova',av:'N',reg:'Samarqand',exp:'10 yil',r:4.8,rev:28,spec:'Chorva mollar',ph:'+998912345678'},
+  {n:'Dr. Jasur Yusupov',av:'J',reg:"Farg'ona",exp:'8 yil',r:4.7,rev:19,spec:'Ot, sigir',ph:'+998933456789'},
+  {n:'Dr. Shahnoza Mirzayeva',av:'S2',reg:'Buxoro',exp:'12 yil',r:4.6,rev:22,spec:'Parrandalar',ph:'+998944567890'},
+];
+
+function starsHtml(r){let s='';for(let i=1;i<=5;i++)s+=i<=Math.round(r)?'⭐':'☆';return s;}
+
+function openRating(type){
+  const t=T[CL]||T.uz;
+  const modal=document.getElementById('ratingModal');
+  const cont=document.getElementById('rmContent');
+  let html='';
+
+  if(type==='seller'){
+    html=`<h2 class="rm-tit">${t.rt_seller}</h2>`;
+    SEL.forEach((s,i)=>{
+      html+=`<div class="rm-card" style="animation-delay:${i*0.08}s">
+        <div class="rm-rank-badge ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">#${i+1}</div>
+        <div class="rm-av">${s.av}</div>
+        <div class="rm-info">
+          <div class="rm-name">${s.n} ${s.badge}</div>
+          <div class="rm-meta">📍 ${s.reg} · 📦 ${s.sales} savdo</div>
+          <div class="rm-bio">${s.bio}</div>
+          <div class="rm-stars-row">${starsHtml(s.r)} <b>${s.r}</b> <span class="rm-rc">(${s.rev})</span></div>
+        </div>
+      </div>`;
+    });
+  } else if(type==='vet'){
+    html=`<h2 class="rm-tit">${t.rt_vet}</h2>`;
+    VETS.forEach((v,i)=>{
+      html+=`<div class="rm-card" style="animation-delay:${i*0.08}s">
+        <div class="rm-rank-badge vet-rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">#${i+1}</div>
+        <div class="rm-av vet-av">${v.av[0]}</div>
+        <div class="rm-info">
+          <div class="rm-name">${v.n}</div>
+          <div class="rm-meta">📍 ${v.reg} · 🎓 ${v.exp}</div>
+          <div class="rm-bio">🐾 ${v.spec}</div>
+          <div class="rm-stars-row">${starsHtml(v.r)} <b>${v.r}</b> <span class="rm-rc">(${v.rev})</span></div>
+          <div class="rm-ph">📞 ${v.ph}</div>
+        </div>
+      </div>`;
+    });
+  } else {
+    {% if me %}
+    html=`<h2 class="rm-tit">${t.rt_my}</h2>
+      <div class="rm-my">
+        <div class="rm-my-av">{{ (me.avatar_letter or (me.full_name or me.username)[0])|upper }}</div>
+        <div class="rm-my-name">{{ me.full_name or me.username }}</div>
+        <div class="rm-my-user">@{{ me.username }}{% if me.is_verified %} ✅{% endif %}</div>
+        <div class="rm-big-stars">${starsHtml({{ me.rating }})}</div>
+        <div class="rm-big-score">{{ "%.1f"|format(me.rating) }} <span>/ 5.0</span></div>
+        <div class="rm-my-grid">
+          <div class="rm-mg"><span>{{ me.total_sales }}</span><small>Savdolar</small></div>
+          <div class="rm-mg"><span>{{ "%.1f"|format(me.rating) }}</span><small>Reyting</small></div>
+          <div class="rm-mg"><span>{% if me.is_verified %}✅{% else %}—{% endif %}</span><small>Tasdiqlangan</small></div>
+        </div>
+        <a href="/user/{{ me.username }}" class="btn btn-p" style="margin-top:16px;display:inline-block">Profilni ko'rish</a>
+      </div>`;
+    {% else %}
+    html=`<div style="text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:16px">🔐</div>
+      <p style="margin-bottom:16px">Iltimos tizimga kiring</p>
+      <a href="/login" class="btn btn-p">Kirish</a></div>`;
+    {% endif %}
+  }
+
+  cont.innerHTML=html;
+  modal.style.display='flex';
+  requestAnimationFrame(()=>modal.classList.add('show'));
+}
+
+function closeRating(){
+  const modal=document.getElementById('ratingModal');
+  modal.classList.remove('show');
+  setTimeout(()=>modal.style.display='none',320);
+}
+</script>
+<style>
+#nvMob.open{display:flex!important}
+{% raw %}@media(max-width:900px){#nvTog{display:block!important}.nv-links{display:none!important}}{% endraw %}
+</style>
+{% block scripts %}{% endblock %}
+</body>
+</html>

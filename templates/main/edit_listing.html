@@ -1,0 +1,26 @@
+{% extends 'main/base.html' %}{% block title %}E'lonni tahrirlash{% endblock %}
+{% block content %}
+<div class="pw"><div class="cn" style="padding-top:32px;padding-bottom:60px;max-width:760px">
+  <h1 style="font-size:28px;font-weight:800;margin-bottom:24px">✏️ E'lonni tahrirlash</h1>
+  <div class="sc afu"><form method="post">
+    <div class="fgroup"><label class="flabel">📝 Sarlavha *</label><input name="title" value="{{ item.title }}" class="fctrl" required/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="fgroup"><label class="flabel">🐾 Tur *</label><select name="animal_slug" class="fctrl" required>{% for slug,emoji,name in animal_types %}<option value="{{ slug }}" {% if item.animal_slug==slug %}selected{% endif %}>{{ emoji }} {{ name }}</option>{% endfor %}</select></div>
+      <div class="fgroup"><label class="flabel">💰 Narx *</label><input name="price" type="number" value="{{ item.price }}" class="fctrl" required/></div>
+      <div class="fgroup"><label class="flabel">📍 Viloyat *</label><select name="region" class="fctrl" required>{% for r in regions %}<option value="{{ r }}" {% if item.region==r %}selected{% endif %}>{{ r }}</option>{% endfor %}</select></div>
+      <div class="fgroup"><label class="flabel">🏘 Tuman</label><input name="district" value="{{ item.district }}" class="fctrl"/></div>
+      <div class="fgroup"><label class="flabel">🔢 Son</label><input name="count" type="number" value="{{ item.count }}" min="1" class="fctrl"/></div>
+      <div class="fgroup"><label class="flabel">🕐 Yoshi</label><input name="age" value="{{ item.age }}" class="fctrl"/></div>
+      <div class="fgroup"><label class="flabel">♂️ Jinsi</label><select name="gender" class="fctrl"><option {% if item.gender=='Erkak' %}selected{% endif %}>Erkak</option><option {% if item.gender=="Urg'ochi" %}selected{% endif %}>Urg'ochi</option><option {% if item.gender=='Aralash' %}selected{% endif %}>Aralash</option></select></div>
+      <div class="fgroup"><label class="flabel">🧬 Zoti</label><input name="breed" value="{{ item.breed }}" class="fctrl"/></div>
+      <div class="fgroup"><label class="flabel">⚖️ Vazni</label><input name="weight" value="{{ item.weight }}" class="fctrl"/></div>
+    </div>
+    <div class="fgroup"><label class="flabel">📄 Tavsif</label><textarea name="description" class="fctrl" rows="4">{{ item.description }}</textarea></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button type="submit" class="btn btn-p">Saqlash ✅</button>
+      <a href="/listing/{{ item.id }}" class="btn btn-o">Bekor qilish</a>
+    </div>
+  </form></div>
+</div></div>
+<style>@media(max-width:600px){form > div[style*="grid"]{grid-template-columns:1fr!important}}</style>
+{% endblock %}

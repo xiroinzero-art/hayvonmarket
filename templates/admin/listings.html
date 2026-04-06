@@ -1,0 +1,47 @@
+{% extends 'admin/base.html' %}{% block title %}E'lonlar{% endblock %}
+{% block content %}
+<div class="adm-hd" style="display:flex;align-items:center;justify-content:space-between">
+  <h1>📋 E'lonlar ({{ items|length }})</h1>
+</div>
+<div class="sc-stat" data-anim>
+  <div style="overflow-x:auto">
+  <table class="dt">
+    <thead><tr><th>#</th><th>E'lon</th><th>Sotuvchi</th><th>Narx</th><th>Viloyat</th><th>Ko'rish</th><th>Holat</th><th>Amallar</th></tr></thead>
+    <tbody>
+    {% for item in items %}
+    <tr>
+      <td style="color:#94a3b8">{{ item.id }}</td>
+      <td>
+        <a href="/listing/{{ item.id }}" style="color:var(--g);font-weight:600">{{ item.animal_emoji }} {{ item.title[:30] }}{% if item.title|length>30 %}...{% endif %}</a>
+        <div style="font-size:11px;color:#94a3b8">{{ item.created_at[:10] }}</div>
+      </td>
+      <td><a href="/user/{{ item.username }}" style="color:var(--g)">{{ item.username }}</a></td>
+      <td style="font-weight:700;color:#16a34a;white-space:nowrap">{{ item.price|fmt }} so'm</td>
+      <td>{{ item.region }}</td>
+      <td>{{ item.views }}</td>
+      <td>
+        {% if item.is_sold %}<span class="badge b-rd">Sotildi</span>
+        {% elif item.is_active %}<span class="badge b-gr">✅ Faol</span>
+        {% else %}<span class="badge b-yw">To'xtatilgan</span>{% endif %}
+        {% if item.is_premium %}<span class="badge" style="background:#fef3c7;color:#92400e">⭐</span>{% endif %}
+      </td>
+      <td>
+        <div style="display:flex;gap:5px;align-items:center">
+          <form method="post" action="/admin/listings/{{ item.id }}/toggle" style="display:flex;gap:4px">
+            <button type="submit" class="btn btn-sm btn-o" style="padding:5px 9px;font-size:12px">
+              {% if item.is_active %}⏸{% else %}▶{% endif %}
+            </button>
+            <button type="submit" name="premium" value="1" class="btn btn-sm" style="padding:5px 9px;font-size:12px;background:#fef3c7;color:#92400e;border:1px solid #fde68a">⭐</button>
+          </form>
+          <form method="post" action="/admin/listings/{{ item.id }}/delete" style="display:inline" onsubmit="return confirm('O\'chirishni tasdiqlaysizmi?')">
+            <button type="submit" class="btn btn-d btn-sm" style="padding:5px 9px;font-size:12px">🗑</button>
+          </form>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

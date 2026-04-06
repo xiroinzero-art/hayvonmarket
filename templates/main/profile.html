@@ -1,0 +1,56 @@
+{% extends 'main/base.html' %}
+{% block title %}Profil{% endblock %}
+{% block content %}
+<div class="pw">
+<div class="cn" style="padding-top:32px;padding-bottom:60px">
+  <div class="prof-hd afu">
+    <div class="prof-av">{{ (user.avatar_letter or (user.full_name or user.username)[0])|upper }}</div>
+    <div>
+      <div class="prof-name">{{ user.full_name or user.username }}</div>
+      <div class="prof-meta">📍 {{ user.region or 'Nomalum' }} · 📞 {{ user.phone or 'Yo\'q' }} · ⭐ {{ "%.1f"|format(user.rating) }}</div>
+      {% if user.is_verified %}<span style="background:rgba(255,255,255,.2);padding:3px 10px;border-radius:50px;font-size:12px;font-weight:600;margin-top:6px;display:inline-block">✅ Tasdiqlangan</span>{% endif %}
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:28px">
+    <div>
+      <div class="sc" style="margin-bottom:22px">
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:18px">✏️ Profilni tahrirlash</h3>
+        <form method="post">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="fgroup"><label class="flabel">To'liq ism</label><input name="full_name" value="{{ user.full_name }}" class="fctrl"/></div>
+            <div class="fgroup"><label class="flabel">Telefon</label><input name="phone" value="{{ user.phone }}" class="fctrl"/></div>
+            <div class="fgroup"><label class="flabel">Email</label><input name="email" value="{{ user.email }}" class="fctrl"/></div>
+            <div class="fgroup"><label class="flabel">Viloyat</label>
+              <select name="region" class="fctrl">{% for r in regions %}<option value="{{ r }}" {% if user.region==r %}selected{% endif %}>{{ r }}</option>{% endfor %}</select>
+            </div>
+          </div>
+          <div class="fgroup"><label class="flabel">Bio</label><textarea name="bio" class="fctrl" rows="3">{{ user.bio }}</textarea></div>
+          <h4 style="font-size:15px;font-weight:600;margin:16px 0 12px">🔒 Parolni o'zgartirish</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="fgroup"><label class="flabel">Eski parol</label><input name="old_password" type="password" class="fctrl"/></div>
+            <div class="fgroup"><label class="flabel">Yangi parol</label><input name="new_password" type="password" class="fctrl"/></div>
+          </div>
+          <button type="submit" class="btn btn-p">Saqlash ✅</button>
+        </form>
+      </div>
+    </div>
+    <div>
+      <div class="sc" style="margin-bottom:14px">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:14px">📊 Statistika</h3>
+        {% for icon,label,val in [('📦','Jami savdolar',user.total_sales),('⭐','Reyting','%.1f'|format(user.rating))] %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)">
+          <span style="font-size:14px;color:var(--mt)">{{ icon }} {{ label }}</span>
+          <span style="font-weight:700;font-size:15px">{{ val }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      <a href="/my-listings" class="btn btn-p" style="width:100%;margin-bottom:8px">📋 Mening e'lonlarim</a>
+      <a href="/favorites"   class="btn btn-o" style="width:100%;margin-bottom:8px">❤️ Sevimlilar</a>
+      <a href="/messages"    class="btn btn-o" style="width:100%">💬 Xabarlar {% if unread %}<span class="badge b-rd">{{ unread }}</span>{% endif %}</a>
+    </div>
+  </div>
+</div>
+</div>
+<style>@media(max-width:700px){.sc form > div[style*="grid"]{grid-template-columns:1fr!important}}</style>
+{% endblock %}

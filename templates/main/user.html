@@ -1,0 +1,65 @@
+{% extends 'main/base.html' %}{% block title %}{{ user.full_name or user.username }}{% endblock %}
+{% block content %}
+<div class="pw"><div class="cn" style="padding-top:32px;padding-bottom:60px">
+  <div class="prof-hd afu">
+    <div class="prof-av">{{ (user.avatar_letter or (user.full_name or user.username)[0])|upper }}</div>
+    <div>
+      <div class="prof-name">{{ user.full_name or user.username }}{% if user.is_verified %} <span style="font-size:16px">✅</span>{% endif %}</div>
+      <div class="prof-meta">📍 {{ user.region or 'O\'zbekiston' }} · ⭐ {{ "%.1f"|format(avg) }} · 📦 {{ user.total_sales }} savdo</div>
+      {% if user.bio %}<div style="font-size:14px;opacity:.85;margin-top:8px;max-width:500px">{{ user.bio }}</div>{% endif %}
+    </div>
+    {% if me and me.id != user.id %}
+    <div style="margin-left:auto">
+      <a href="/messages/{{ user.id }}" class="btn btn-p" style="background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4)">💬 Xabar</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:28px">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;margin-bottom:18px" data-anim>📋 E'lonlar ({{ items|length }})</h2>
+      {% if items %}
+      <div class="g3" style="gap:16px">{% for item in items %}
+        <a href="/listing/{{ item.id }}" class="card" data-anim style="text-decoration:none;color:inherit">
+          <div class="card-img {% if item.is_premium %}premium{% endif %}">{{ item.animal_emoji }}</div>
+          <div class="card-body">
+            <div class="card-tit">{{ item.title }}</div>
+            <div class="card-tags"><span class="tag">📍 {{ item.region }}</span></div>
+            <div class="card-price">{{ item.price|fmt }} so'm</div>
+          </div>
+        </a>
+      {% endfor %}</div>
+      {% else %}<p style="color:var(--mt)">E'lonlar yo'q</p>{% endif %}
+    </div>
+    <div>
+      <div class="sc" style="margin-bottom:18px" data-anim>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:14px">⭐ Reytinglar ({{ reviews|length }})</h3>
+        {% if reviews %}{% for r in reviews %}
+        <div style="padding:12px 0;border-bottom:1px solid var(--bdr){% if loop.last %};border:none{% endif %}">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+            <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ r.avatar_letter or r.full_name[0]|upper }}</div>
+            <span style="font-weight:600;font-size:13px">{{ r.full_name or r.username }}</span>
+            <span style="color:#f59e0b">{{ '⭐'*r.rating }}</span>
+          </div>
+          {% if r.body %}<p style="font-size:13px;color:var(--mt);margin-left:33px">{{ r.body }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        {% else %}<p style="color:var(--mt);font-size:14px">Sharh yo'q</p>{% endif %}
+        {% if me and me.id != user.id %}
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--bdr)">
+          <form action="/user/{{ user.id }}/review" method="post">
+            <div style="display:flex;gap:3px;margin-bottom:8px;cursor:pointer" class="star-pick" data-val="5">
+              <span data-star="1">⭐</span><span data-star="2">⭐</span><span data-star="3">⭐</span><span data-star="4">⭐</span><span data-star="5">⭐</span>
+            </div>
+            <input type="hidden" name="rating" value="5"/>
+            <textarea name="body" class="fctrl" rows="2" placeholder="Sharh..." style="margin-bottom:7px"></textarea>
+            <button type="submit" class="btn btn-p btn-sm">Yuborish</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div></div>
+<style>@media(max-width:700px){.cn > div[style*="grid"]{grid-template-columns:1fr!important}}</style>
+{% endblock %}

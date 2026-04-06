@@ -1,0 +1,170 @@
+{% extends 'main/base.html' %}
+{% block title %}Yetkazib berish katalogi{% endblock %}
+{% block content %}
+<div class="pw">
+<div class="cn" style="padding-top:32px;padding-bottom:60px">
+
+  <!-- Hero -->
+  <div style="background:linear-gradient(135deg,#16a34a,#15803d);border-radius:20px;padding:36px 32px;margin-bottom:32px;color:#fff;position:relative;overflow:hidden" data-anim>
+    <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:80px;opacity:.18">🚚</div>
+    <h1 style="font-size:30px;font-weight:800;margin-bottom:8px">🚚 <span data-i18n="delivery_title">Yetkazib berish katalogi</span></h1>
+    <p style="opacity:.9;font-size:15px" data-i18n="delivery_sub">Viloyat va tumanlar bo'yicha hayvon yetkazib berish</p>
+    <div style="display:flex;gap:16px;margin-top:18px;flex-wrap:wrap">
+      <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600">📍 14 viloyat</div>
+      <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600">🏘️ 200+ tuman</div>
+      <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600">🚀 Tezkor yetkazib berish</div>
+      <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600">🔒 Xavfsiz savdo</div>
+    </div>
+  </div>
+
+  <!-- Region Cards (shown when no region selected) -->
+  {% if not region %}
+  <div style="margin-bottom:32px" data-anim>
+    <h2 style="font-size:20px;font-weight:700;color:var(--dk);margin-bottom:16px">🗺️ Viloyatni tanlang</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px">
+      {% for reg_name, districts in all_districts.items() %}
+      <a href="/delivery?region={{ reg_name }}" style="text-decoration:none">
+        <div style="background:var(--card-bg);border:1px solid var(--bdr);border-radius:14px;padding:16px;transition:all .2s;cursor:pointer" onmouseover="this.style.borderColor='#22c55e';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--bdr)';this.style.transform='translateY(0)'">
+          <div style="font-size:24px;margin-bottom:8px">📍</div>
+          <div style="font-weight:700;font-size:14px;color:var(--dk)">{{ reg_name }}</div>
+          <div style="font-size:12px;color:var(--mt);margin-top:4px">{{ districts|length }} tuman</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Filters -->
+  <div class="filter-bar" data-anim>
+    <form method="get" action="/delivery">
+      <div class="frow" style="margin-bottom:12px;flex-wrap:wrap">
+        <input name="q" value="{{ q }}" class="finput" placeholder="🔍 Qidirish..." data-i18n-ph="search_ph" style="flex:1;min-width:180px"/>
+        <select name="type" class="finput">
+          <option value="" data-i18n="all_types">Barcha turlar</option>
+          {% for slug,emoji,name in animal_types %}
+          <option value="{{ slug }}" {% if atype==slug %}selected{% endif %}>{{ emoji }} {{ name }}</option>
+          {% endfor %}
+        </select>
+        <select name="region" class="finput" id="regionSel" onchange="updateDistricts(this.value)">
+          <option value="" data-i18n="all_regions">Barcha viloyatlar</option>
+          {% for r in regions %}
+          <option value="{{ r }}" {% if region==r %}selected{% endif %}>📍 {{ r }}</option>
+          {% endfor %}
+        </select>
+        <select name="district" class="finput" id="districtSel">
+          <option value="" data-i18n="all_districts">Barcha tumanlar</option>
+          {% for d in districts %}
+          <option value="{{ d }}" {% if district==d %}selected{% endif %}>🏘️ {{ d }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-p" data-i18n="search_btn">🔍 Qidirish</button>
+        <a href="/delivery" class="btn btn-o" data-i18n="clear_btn">✕ Tozalash</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Active filters display -->
+  {% if region or district %}
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center" data-anim>
+    <span style="font-size:13px;color:var(--mt);font-weight:600">Filtr:</span>
+    {% if region %}
+    <span style="background:#dcfce7;color:#166534;border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600">📍 {{ region }} <a href="/delivery{% if district %}?district={{ district }}{% endif %}" style="color:#166534;margin-left:4px">✕</a></span>
+    {% endif %}
+    {% if district %}
+    <span style="background:#dbeafe;color:#1e40af;border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600">🏘️ {{ district }} <a href="/delivery?region={{ region }}" style="color:#1e40af;margin-left:4px">✕</a></span>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Results count -->
+  {% if region or district or q or atype %}
+  <p style="color:var(--mt);margin-bottom:16px;font-size:14px" data-anim>
+    Jami <strong style="color:var(--dk)">{{ total }}</strong> ta e'lon topildi
+  </p>
+  {% endif %}
+
+  {% if items %}
+  <div class="g4">
+    {% for item in items %}
+    <div style="position:relative;animation-delay:{{ loop.index0*0.04 }}s" data-anim>
+      <a href="/listing/{{ item.id }}" class="card" style="display:block;text-decoration:none;color:inherit">
+        <!-- Delivery badge -->
+        <div style="position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border-radius:8px;padding:3px 8px;font-size:10px;font-weight:700;z-index:4">🚚 Yetkaziladi</div>
+        <div class="card-img {% if item.is_premium %}premium{% endif %}">{{ item.animal_emoji }}</div>
+        <div class="card-body">
+          <div class="card-tit">{{ item.title }}</div>
+          <div class="card-tags">
+            <span class="tag">📍 {{ item.region }}</span>
+            {% if item.district %}<span class="tag">🏘️ {{ item.district }}</span>{% endif %}
+            {% if item.age %}<span class="tag">🕐 {{ item.age }}</span>{% endif %}
+            {% if item.count > 1 %}<span class="tag">🔢 {{ item.count }} bosh</span>{% endif %}
+          </div>
+          <div class="card-price">{{ item.price|fmt }} so'm</div>
+          <div class="card-seller">
+            <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ (item.full_name or item.username)[0]|upper }}</div>
+            {{ item.full_name or item.username }}
+            {% if item.is_verified %}<span class="vbadge">✅</span>{% endif %}
+            <span style="margin-left:auto;font-size:11px;color:var(--mt)">👁 {{ item.views }}</span>
+          </div>
+        </div>
+      </a>
+      {% if me %}
+      <button class="fav-btn btn btn-icon" data-lid="{{ item.id }}" style="position:absolute;top:46px;right:10px;background:rgba(255,255,255,.9);backdrop-filter:blur(4px);z-index:5;border-radius:50%;width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.1)">
+        <span class="fic">🤍</span>
+      </button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if pages > 1 %}
+  <div class="pg">
+    {% if page > 1 %}<a href="?{% for k,v in request.args.items() %}{% if k!='page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page-1 }}" class="pg-btn">‹</a>{% endif %}
+    {% for p in range(1, pages+1) %}
+    <a href="?{% for k,v in request.args.items() %}{% if k!='page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ p }}" class="pg-btn {% if p==page %}on{% endif %}">{{ p }}</a>
+    {% endfor %}
+    {% if page < pages %}<a href="?{% for k,v in request.args.items() %}{% if k!='page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page+1 }}" class="pg-btn">›</a>{% endif %}
+  </div>
+  {% endif %}
+
+  {% elif region or district or q or atype %}
+  <div style="text-align:center;padding:80px 20px" data-anim>
+    <div style="font-size:80px;margin-bottom:20px">🔍</div>
+    <h2 style="font-size:24px;font-weight:700;color:var(--dk);margin-bottom:10px" data-i18n="no_results">E'lonlar topilmadi</h2>
+    <p style="color:var(--mt);margin-bottom:24px" data-i18n="no_results_sub">Boshqa kalit so'z yoki filtrlarni sinab ko'ring</p>
+    <a href="/delivery" class="btn btn-p" data-i18n="all_ads">Barcha e'lonlar</a>
+  </div>
+  {% endif %}
+
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+// District data for dynamic loading
+const ALL_DISTRICTS = {{ all_districts | tojson }};
+
+function updateDistricts(region) {
+  const sel = document.getElementById('districtSel');
+  sel.innerHTML = '<option value="">Barcha tumanlar</option>';
+  if (region && ALL_DISTRICTS[region]) {
+    ALL_DISTRICTS[region].forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d;
+      opt.textContent = '🏘️ ' + d;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+// Highlight active region card
+document.querySelectorAll('.region-card').forEach(card => {
+  card.addEventListener('click', function() {
+    document.getElementById('regionSel').value = this.dataset.region;
+    updateDistricts(this.dataset.region);
+  });
+});
+</script>
+{% endblock %}

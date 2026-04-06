@@ -1,0 +1,106 @@
+{% extends 'main/base.html' %}
+{% block title %}Katalog{% endblock %}
+{% block content %}
+<div class="pw">
+<div class="cn" style="padding-top:32px;padding-bottom:60px">
+
+  <div style="margin-bottom:24px" data-anim>
+    <h1 style="font-size:32px;font-weight:800;color:var(--dk)">📋 <span data-i18n="cat_title">Katalog</span> <span class="gt">E'lonlar</span></h1>
+    <p style="color:var(--mt);margin-top:4px">Jami {{ total }} <span data-i18n="cat_sub">ta e'lon topildi</span></p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar" data-anim>
+    <form method="get" action="/catalog">
+      <div class="frow" style="margin-bottom:12px">
+        <input name="q" value="{{ q }}" class="finput" placeholder="🔍 Qidirish..." data-i18n-ph="search_ph" style="flex:1;min-width:180px"/>
+        <select name="type" class="finput">
+          <option value="" data-i18n="all_types">Barcha turlar</option>
+          {% for slug,emoji,name in animal_types %}
+          <option value="{{ slug }}" {% if atype==slug %}selected{% endif %}>{{ emoji }} {{ name }}</option>
+          {% endfor %}
+        </select>
+        <select name="region" class="finput">
+          <option value="" data-i18n="all_regions">Barcha viloyatlar</option>
+          {% for r in regions %}
+          <option value="{{ r }}" {% if reg==r %}selected{% endif %}>📍 {{ r }}</option>
+          {% endfor %}
+        </select>
+        <input name="min" value="{{ minp }}" class="finput" data-i18n-ph="min_price" placeholder="Min narx" type="number" style="width:110px"/>
+        <input name="max" value="{{ maxp }}" class="finput" data-i18n-ph="max_price" placeholder="Max narx" type="number" style="width:110px"/>
+        <button type="submit" class="btn btn-p" data-i18n="search_btn">🔍 Qidirish</button>
+        <a href="/catalog" class="btn btn-o" data-i18n="clear_btn">✕ Tozalash</a>
+      </div>
+      <div class="frow">
+        <span style="font-size:13px;color:var(--mt);font-weight:600" data-i18n="sort_label">Saralash:</span>
+        {% for val,key in [('new','sort_new'),('price_asc','sort_cheap'),('price_desc','sort_exp'),('popular','sort_pop')] %}
+        <a href="?{% for k,v in request.args.items() %}{% if k!='sort' and k!='page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}sort={{ val }}"
+           class="chip {% if sort==val %}on{% endif %}" data-i18n="{{ key }}">{{ val }}</a>
+        {% endfor %}
+      </div>
+    </form>
+  </div>
+
+  <!-- Animal type quick filters -->
+  <div class="frow" style="margin-bottom:20px;gap:8px;flex-wrap:wrap" data-anim>
+    <a href="/catalog" class="chip {% if not atype %}on{% endif %}">🐾 <span data-i18n="all_types">Hammasi</span></a>
+    {% for slug,emoji,name in animal_types %}
+    <a href="/catalog?type={{ slug }}{% if q %}&q={{ q }}{% endif %}{% if reg %}&region={{ reg }}{% endif %}"
+       class="chip {% if atype==slug %}on{% endif %}">{{ emoji }} {{ name }}</a>
+    {% endfor %}
+  </div>
+
+  {% if items %}
+  <div class="g4">
+    {% for item in items %}
+    <div style="position:relative;animation-delay:{{ loop.index0*0.04 }}s" data-anim>
+      <a href="/listing/{{ item.id }}" class="card" style="display:block;text-decoration:none;color:inherit">
+        <div class="card-img {% if item.is_premium %}premium{% endif %}">{{ item.animal_emoji }}</div>
+        <div class="card-body">
+          <div class="card-tit">{{ item.title }}</div>
+          <div class="card-tags">
+            <span class="tag">📍 {{ item.region }}</span>
+            {% if item.age %}<span class="tag">🕐 {{ item.age }}</span>{% endif %}
+            {% if item.count > 1 %}<span class="tag">🔢 {{ item.count }} bosh</span>{% endif %}
+          </div>
+          <div class="card-price">{{ item.price|fmt }} so'm</div>
+          <div class="card-seller">
+            <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ (item.full_name or item.username)[0]|upper }}</div>
+            {{ item.full_name or item.username }}
+            {% if item.is_verified %}<span class="vbadge">✅</span>{% endif %}
+            <span style="margin-left:auto;font-size:11px;color:var(--mt)">👁 {{ item.views }}</span>
+          </div>
+        </div>
+      </a>
+      {% if me %}
+      <button class="fav-btn btn btn-icon" data-lid="{{ item.id }}" style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,.9);backdrop-filter:blur(4px);z-index:5;border-radius:50%;width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.1)">
+        <span class="fic">🤍</span>
+      </button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if pages > 1 %}
+  <div class="pg">
+    {% if page > 1 %}<a href="?{% for k,v in request.args.items() %}{% if k!='page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page-1 }}" class="pg-btn">‹</a>{% endif %}
+    {% for p in range(1, pages+1) %}
+    <a href="?{% for k,v in request.args.items() %}{% if k!='page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ p }}" class="pg-btn {% if p==page %}on{% endif %}">{{ p }}</a>
+    {% endfor %}
+    {% if page < pages %}<a href="?{% for k,v in request.args.items() %}{% if k!='page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page+1 }}" class="pg-btn">›</a>{% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div style="text-align:center;padding:80px 20px" data-anim>
+    <div style="font-size:80px;margin-bottom:20px">🔍</div>
+    <h2 style="font-size:24px;font-weight:700;color:var(--dk);margin-bottom:10px" data-i18n="no_results">E'lonlar topilmadi</h2>
+    <p style="color:var(--mt);margin-bottom:24px" data-i18n="no_results_sub">Boshqa kalit so'z yoki filtrlarni sinab ko'ring</p>
+    <a href="/catalog" class="btn btn-p" data-i18n="all_ads">Barcha e'lonlar</a>
+  </div>
+  {% endif %}
+
+</div>
+</div>
+{% endblock %}

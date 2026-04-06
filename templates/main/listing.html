@@ -1,0 +1,357 @@
+{% extends 'main/base.html' %}
+{% block title %}{{ item.title }}{% endblock %}
+{% block content %}
+<div class="ld">
+  <!-- Breadcrumb -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;font-size:14px;color:var(--mt)">
+    <a href="/" style="color:var(--g)">🏠 Bosh sahifa</a> /
+    <a href="/catalog" style="color:var(--g)">Katalog</a> /
+    <span>{{ item.title[:40] }}{% if item.title|length>40 %}...{% endif %}</span>
+  </div>
+
+  <div class="ld-hero">
+    <!-- Image -->
+    <div class="ld-img" style="position:relative">
+      {{ item.animal_emoji }}
+      {% if item.is_premium %}<div style="position:absolute;top:14px;left:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:50px">⭐ Premium</div>{% endif %}
+      {% if item.is_sold %}<div style="position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;border-radius:var(--rd)"><span style="background:#dc2626;color:#fff;font-size:18px;font-weight:800;padding:10px 24px;border-radius:12px">SOTILDI</span></div>{% endif %}
+    </div>
+
+    <!-- Info -->
+    <div class="ld-info">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <span style="padding:5px 14px;background:var(--gl);color:var(--gd);border-radius:50px;font-size:13px;font-weight:700">{{ item.animal_emoji }} {{ item.animal_name }}</span>
+        {% if item.is_premium %}<span style="padding:5px 14px;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-radius:50px;font-size:13px;font-weight:700">⭐ Premium</span>{% endif %}
+        {% if item.is_sold %}<span style="padding:5px 14px;background:#fee2e2;color:#dc2626;border-radius:50px;font-size:13px;font-weight:700">❌ Sotildi</span>{% endif %}
+      </div>
+      <h1 class="ld-tit">{{ item.title }}</h1>
+      <div class="ld-price">{{ item.price|fmt }} so'm</div>
+
+      <!-- MODERN ATTRIBUTES GRID -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:22px">
+        <div style="background:linear-gradient(135deg,var(--bg3),var(--bg));border:1px solid var(--bdr);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px">📍 Hudud</span>
+          <span style="font-weight:700;font-size:13px;color:var(--dk)">{{ item.region }}{% if item.district %}, {{ item.district }}{% endif %}</span>
+        </div>
+        {% if item.age %}
+        <div style="background:linear-gradient(135deg,var(--bg3),var(--bg));border:1px solid var(--bdr);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px">🕐 Yoshi</span>
+          <span style="font-weight:700;font-size:13px;color:var(--dk)">{{ item.age }}</span>
+        </div>
+        {% endif %}
+        {% if item.gender %}
+        <div style="background:linear-gradient(135deg,var(--bg3),var(--bg));border:1px solid var(--bdr);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px">⚥ Jinsi</span>
+          <span style="font-weight:700;font-size:13px;color:var(--dk)">{{ item.gender }}</span>
+        </div>
+        {% endif %}
+        {% if item.breed %}
+        <div style="background:linear-gradient(135deg,var(--bg3),var(--bg));border:1px solid var(--bdr);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px">🧬 Zoti</span>
+          <span style="font-weight:700;font-size:13px;color:var(--dk)">{{ item.breed }}</span>
+        </div>
+        {% endif %}
+        {% if item.count > 1 %}
+        <div style="background:linear-gradient(135deg,var(--bg3),var(--bg));border:1px solid var(--bdr);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px">🔢 Soni</span>
+          <span style="font-weight:700;font-size:13px;color:var(--dk)">{{ item.count }} bosh</span>
+        </div>
+        {% endif %}
+        {% if item.weight %}
+        <div style="background:linear-gradient(135deg,var(--bg3),var(--bg));border:1px solid var(--bdr);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px">⚖️ Vazni</span>
+          <span style="font-weight:700;font-size:13px;color:var(--dk)">{{ item.weight }}</span>
+        </div>
+        {% endif %}
+        <div style="background:linear-gradient(135deg,var(--bg3),var(--bg));border:1px solid var(--bdr);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px">👁 Ko'rishlar</span>
+          <span style="font-weight:700;font-size:13px;color:var(--dk)">{{ item.views }}</span>
+        </div>
+      </div>
+
+      {% if item.description %}
+      <!-- MODERN DESCRIPTION CARD -->
+      <div style="background:linear-gradient(135deg,var(--gl),rgba(var(--gs),.06));border:1.5px solid rgba(var(--gs),.2);border-radius:18px;padding:20px;margin-bottom:22px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:.07">📝</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="width:28px;height:28px;background:var(--g);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px">📝</div>
+          <span style="font-weight:700;font-size:14px;color:var(--dk)">Tavsif</span>
+        </div>
+        <p style="font-size:14px;line-height:1.75;color:var(--tx)">{{ item.description }}</p>
+      </div>
+      {% endif %}
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        {% if not item.is_sold %}
+          {% if me and me.id != item.seller_id %}
+          <a href="/messages/{{ item.seller_id }}?listing_id={{ item.id }}" class="btn btn-p">💬 Bog'lanish</a>
+          {% endif %}
+          {% if me %}
+          <button class="fav-btn btn btn-o {% if is_fav %}on{% endif %}" data-lid="{{ item.id }}">
+            <span class="fic">{% if is_fav %}❤️{% else %}🤍{% endif %}</span>
+            {% if is_fav %}Sevimlida{% else %}Sevimlilarga{% endif %}
+          </button>
+          {% endif %}
+        {% endif %}
+        {% if not me %}
+        <a href="/login" class="btn btn-p">🔑 Sotuvchi bilan bog'lanish uchun kiring</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:28px;flex-wrap:wrap" class="ld-main">
+    <div>
+      <!-- MODERN SELLER CARD -->
+      <div style="background:var(--card-bg);border:1px solid var(--bdr);border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:var(--sh)">
+        <!-- Header band -->
+        <div style="background:linear-gradient(135deg,var(--g),var(--gd));padding:18px 20px;position:relative;overflow:hidden">
+          <div style="position:absolute;right:-10px;top:-10px;font-size:80px;opacity:.1">👤</div>
+          <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">Sotuvchi haqida</div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <a href="/user/{{ item.username }}" style="width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.25);color:#fff;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;text-decoration:none;flex-shrink:0;border:2px solid rgba(255,255,255,.4)">{{ item.avatar_letter or (item.full_name or item.username)[0]|upper }}</a>
+            <div>
+              <a href="/user/{{ item.username }}" style="font-weight:800;font-size:17px;color:#fff;display:block">{{ item.full_name or item.username }}</a>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap">
+                {% if item.is_verified %}<span style="background:rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid rgba(255,255,255,.3)">✅ Tasdiqlangan</span>{% endif %}
+                <span style="color:rgba(255,255,255,.85);font-size:12px">⭐ {{ "%.1f"|format(item.rating) }} · 📦 {{ item.total_sales }} savdo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Body -->
+        <div style="padding:18px 20px">
+          {% if item.bio %}
+          <p style="font-size:14px;color:var(--mt);line-height:1.65;margin-bottom:16px;padding:12px 14px;background:var(--bg);border-radius:12px;border-left:3px solid var(--g)">{{ item.bio }}</p>
+          {% endif %}
+          {% if item.phone %}
+          <div style="background:linear-gradient(135deg,var(--gl),var(--bg));border:1px solid rgba(var(--gs),.2);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div style="width:40px;height:40px;background:var(--g);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📞</div>
+            <div>
+              <div style="font-size:11px;color:var(--gd);font-weight:700;text-transform:uppercase;letter-spacing:.4px">Telefon raqami</div>
+              <div style="font-weight:800;font-size:16px;color:var(--dk);margin-top:1px">{{ item.phone }}</div>
+            </div>
+          </div>
+          {% endif %}
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            {% if me and me.id != item.seller_id %}
+            <a href="/messages/{{ item.seller_id }}?listing_id={{ item.id }}" class="btn btn-p btn-sm">💬 Xabar yuborish</a>
+            {% endif %}
+            <a href="/user/{{ item.username }}" class="btn btn-o btn-sm">📋 Barcha e'lonlari</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SELLER REVIEWS -->
+      <div style="background:var(--card-bg);border:1px solid var(--bdr);border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:var(--sh)">
+        <div style="padding:20px 22px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between">
+          <h3 style="font-size:17px;font-weight:800;color:var(--dk);display:flex;align-items:center;gap:8px">
+            <span style="width:30px;height:30px;background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:14px">⭐</span>
+            Sotuvchi sharhlari
+          </h3>
+          <span style="background:var(--gl);color:var(--gd);font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px">{{ reviews|length }} sharh</span>
+        </div>
+        <div style="padding:16px 22px">
+          {% if reviews %}
+          {% for r in reviews %}
+          <div style="padding:14px 0;{% if not loop.last %}border-bottom:1px solid var(--bdr);{% endif %}">
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <div style="width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ r.avatar_letter or r.full_name[0]|upper }}</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px">
+                  <span style="font-weight:700;font-size:14px;color:var(--dk)">{{ r.full_name or r.username }}</span>
+                  <span style="font-size:13px">{{ '⭐'*r.rating }}{{ '☆'*(5-r.rating) }}</span>
+                  <span style="margin-left:auto;font-size:11px;color:var(--mt);background:var(--bg);padding:2px 8px;border-radius:10px">{{ r.created_at[:10] }}</span>
+                </div>
+                {% if r.body %}<p style="font-size:14px;color:var(--tx);line-height:1.6;margin:0">{{ r.body }}</p>{% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div style="text-align:center;padding:32px 0">
+            <div style="font-size:40px;margin-bottom:10px">💬</div>
+            <p style="color:var(--mt);font-size:14px">Hali sharh yo'q</p>
+          </div>
+          {% endif %}
+
+          {% if me and me.id != item.seller_id %}
+          <div style="margin-top:18px;padding-top:18px;border-top:1px solid var(--bdr)">
+            <h4 style="font-size:15px;font-weight:700;margin-bottom:14px;color:var(--dk)">✍️ Sharh qoldirish</h4>
+            <form action="/user/{{ item.seller_id }}/review" method="post">
+              <div style="display:flex;gap:6px;margin-bottom:12px;cursor:pointer;font-size:22px" class="star-pick" data-val="5">
+                <span data-star="1">⭐</span><span data-star="2">⭐</span><span data-star="3">⭐</span><span data-star="4">⭐</span><span data-star="5">⭐</span>
+              </div>
+              <input type="hidden" name="rating" value="5"/>
+              <textarea name="body" class="fctrl" placeholder="Sharh yozing..." rows="3" style="margin-bottom:10px;border-radius:12px"></textarea>
+              <button type="submit" class="btn btn-p btn-sm">Sharh qoldirish →</button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- DELIVERY PERSONS RATING SECTION -->
+      <div style="background:var(--card-bg);border:1px solid var(--bdr);border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:var(--sh)">
+        <div style="background:linear-gradient(135deg,#0f766e,#14b8a6);padding:18px 22px;position:relative;overflow:hidden">
+          <div style="position:absolute;right:-5px;top:-5px;font-size:70px;opacity:.1">🚚</div>
+          <h3 style="font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px">🚚 Yetkazib beruvchilar reytingi</h3>
+          <p style="font-size:12px;color:rgba(255,255,255,.75);margin-top:4px">Ishonchli yetkazib beruvchilarni tanlang</p>
+        </div>
+        <div style="padding:16px 22px">
+          {% for dp in delivery_persons %}
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 0;{% if not loop.last %}border-bottom:1px solid var(--bdr);{% endif %}">
+            <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#14b8a6,#0f766e);color:#fff;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ dp.avatar }}</div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:14px;color:var(--dk)">{{ dp.name }}</div>
+              <div style="font-size:12px;color:var(--mt);margin-top:2px">📍 {{ dp.region }} · 🚛 {{ dp.deliveries }} yetkazish</div>
+              <div style="font-size:12px;margin-top:3px">⭐ {{ dp.rating }} <span style="color:var(--mt)">({{ dp.reviews }} sharh)</span></div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800;font-size:14px;color:#14b8a6">{{ dp.price }}</div>
+              <button onclick="openDeliveryReview('{{ dp.id }}','{{ dp.name }}')" style="background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.3);color:#0f766e;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;cursor:pointer;margin-top:4px;font-family:var(--fn)">Sharh ✏️</button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- VET REVIEWS SECTION -->
+      <div style="background:var(--card-bg);border:1px solid var(--bdr);border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:var(--sh)">
+        <div style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);padding:18px 22px;position:relative;overflow:hidden">
+          <div style="position:absolute;right:-5px;top:-5px;font-size:70px;opacity:.1">🩺</div>
+          <h3 style="font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px">🩺 Veterinar sharhlari</h3>
+          <p style="font-size:12px;color:rgba(255,255,255,.75);margin-top:4px">Hayvon sog'ligini tekshirish uchun mutaxassislar</p>
+        </div>
+        <div style="padding:16px 22px">
+          {% for vet in vets %}
+          <div style="padding:14px 0;{% if not loop.last %}border-bottom:1px solid var(--bdr);{% endif %}">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ vet.avatar }}</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                  <span style="font-weight:700;font-size:14px;color:var(--dk)">{{ vet.name }}</span>
+                  <span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px">{{ vet.spec }}</span>
+                </div>
+                <div style="font-size:12px;color:var(--mt);margin-bottom:5px">📍 {{ vet.region }} · 🎓 {{ vet.exp }} yil tajriba</div>
+                <div style="font-size:13px;margin-bottom:6px">⭐ {{ vet.rating }} <span style="color:var(--mt)">({{ vet.reviews }} sharh)</span></div>
+                {% if vet.last_review %}
+                <div style="background:var(--bg);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--mt);font-style:italic;border-left:3px solid #3b82f6">"{{ vet.last_review }}"</div>
+                {% endif %}
+              </div>
+              <button onclick="openVetReview('{{ vet.id }}','{{ vet.name }}')" style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:#1d4ed8;font-size:11px;font-weight:700;padding:6px 12px;border-radius:10px;cursor:pointer;flex-shrink:0;font-family:var(--fn)">Sharh ✏️</button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar: related -->
+    <div>
+      {% if related %}
+      <div class="sc" style="margin-bottom:18px">
+        <h3 style="font-size:16px;font-weight:700;color:var(--dk);margin-bottom:14px">🔗 O'xshash e'lonlar</h3>
+        {% for r in related %}
+        <a href="/listing/{{ r.id }}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;text-decoration:none;color:inherit;transition:background .2s;margin-bottom:4px" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:28px">{{ r.animal_emoji }}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div>
+            <div style="font-size:12px;color:var(--mt)">📍 {{ r.region }}</div>
+          </div>
+          <div style="font-weight:700;font-size:13px;color:var(--gd);white-space:nowrap">{{ r.price|fmt }}</div>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if seller_other %}
+      <div class="sc">
+        <h3 style="font-size:16px;font-weight:700;color:var(--dk);margin-bottom:14px">📋 Sotuvchining boshqa e'lonlari</h3>
+        {% for r in seller_other %}
+        <a href="/listing/{{ r.id }}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;text-decoration:none;color:inherit;transition:background .2s;margin-bottom:4px" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:26px">{{ r.animal_emoji }}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.title }}</div>
+            <div style="font-size:12px;color:var(--gd);font-weight:600">{{ r.price|fmt }} so'm</div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- DELIVERY REVIEW MODAL -->
+<div id="deliveryReviewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px)" onclick="if(event.target===this)closeDeliveryModal()">
+  <div style="background:var(--card-bg);border-radius:20px;padding:28px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,.3);position:relative;margin:20px">
+    <button onclick="closeDeliveryModal()" style="position:absolute;top:14px;right:14px;background:var(--bg3);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;color:var(--mt)">✕</button>
+    <div style="font-size:30px;margin-bottom:12px">🚚</div>
+    <h3 style="font-size:18px;font-weight:800;color:var(--dk);margin-bottom:4px" id="deliveryModalTitle">Yetkazuvchiga sharh</h3>
+    <p style="font-size:13px;color:var(--mt);margin-bottom:20px" id="deliveryModalSub">Xizmat sifatini baholang</p>
+    <form method="post" id="deliveryReviewForm" action="/delivery-review">
+      <input type="hidden" name="person_id" id="deliveryPersonId"/>
+      <div style="display:flex;gap:6px;margin-bottom:14px;font-size:24px;cursor:pointer" class="star-pick" data-val="5">
+        <span data-star="1">⭐</span><span data-star="2">⭐</span><span data-star="3">⭐</span><span data-star="4">⭐</span><span data-star="5">⭐</span>
+      </div>
+      <input type="hidden" name="rating" value="5"/>
+      <textarea name="body" class="fctrl" placeholder="Yetkazib berish tajribangiz haqida yozing..." rows="4" style="margin-bottom:14px;border-radius:12px"></textarea>
+      <button type="submit" class="btn btn-p" style="width:100%">Sharh yuborish →</button>
+    </form>
+  </div>
+</div>
+
+<!-- VET REVIEW MODAL -->
+<div id="vetReviewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px)" onclick="if(event.target===this)closeVetModal()">
+  <div style="background:var(--card-bg);border-radius:20px;padding:28px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,.3);position:relative;margin:20px">
+    <button onclick="closeVetModal()" style="position:absolute;top:14px;right:14px;background:var(--bg3);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;color:var(--mt)">✕</button>
+    <div style="font-size:30px;margin-bottom:12px">🩺</div>
+    <h3 style="font-size:18px;font-weight:800;color:var(--dk);margin-bottom:4px" id="vetModalTitle">Veterinarga sharh</h3>
+    <p style="font-size:13px;color:var(--mt);margin-bottom:20px" id="vetModalSub">Mutaxassis xizmatini baholang</p>
+    <form method="post" id="vetReviewForm" action="/vet-review">
+      <input type="hidden" name="vet_id" id="vetReviewId"/>
+      <div style="display:flex;gap:6px;margin-bottom:14px;font-size:24px;cursor:pointer" class="star-pick" data-val="5">
+        <span data-star="1">⭐</span><span data-star="2">⭐</span><span data-star="3">⭐</span><span data-star="4">⭐</span><span data-star="5">⭐</span>
+      </div>
+      <input type="hidden" name="rating" value="5"/>
+      <textarea name="body" class="fctrl" placeholder="Veterinar haqidagi fikringizni yozing..." rows="4" style="margin-bottom:14px;border-radius:12px"></textarea>
+      <button type="submit" class="btn btn-p" style="width:100%;background:linear-gradient(135deg,#3b82f6,#1d4ed8)">Sharh yuborish →</button>
+    </form>
+  </div>
+</div>
+
+<style>
+@media(max-width:700px){.ld-main{grid-template-columns:1fr!important}}
+</style>
+{% endblock %}
+{% block scripts %}
+<script>
+function openDeliveryReview(id, name){
+  {% if me %}
+  document.getElementById('deliveryPersonId').value = id;
+  document.getElementById('deliveryModalTitle').textContent = name + ' — sharh';
+  document.getElementById('deliveryModalSub').textContent = 'Yetkazib berish xizmatini baholang';
+  document.getElementById('deliveryReviewModal').style.display = 'flex';
+  {% else %}
+  window.location='/login';
+  {% endif %}
+}
+function closeDeliveryModal(){
+  document.getElementById('deliveryReviewModal').style.display='none';
+}
+function openVetReview(id, name){
+  {% if me %}
+  document.getElementById('vetReviewId').value = id;
+  document.getElementById('vetModalTitle').textContent = name + ' — sharh';
+  document.getElementById('vetModalSub').textContent = 'Veterinar xizmatini baholang';
+  document.getElementById('vetReviewModal').style.display = 'flex';
+  {% else %}
+  window.location='/login';
+  {% endif %}
+}
+function closeVetModal(){
+  document.getElementById('vetReviewModal').style.display='none';
+}
+</script>
+{% endblock %}
