@@ -1,86 +1,38 @@
-{% extends 'admin/base.html' %}
-{% block title %}Foydalanuvchilar{% endblock %}
-{% block page_title %}👥 Foydalanuvchilar{% endblock %}
-{% block page_sub %}Barcha ro'yxatdan o'tgan foydalanuvchilar{% endblock %}
+{% extends 'admin/base.html' %}{% block title %}Foydalanuvchilar{% endblock %}
 {% block content %}
-
-<div class="adm-card" style="margin-bottom:20px">
-  <div class="adm-card-head">
-    <form method="get" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <input name="q" value="{{ q }}" placeholder="🔍 Login yoki ism..." class="adm-search" style="width:240px"/>
-      <select name="filter" class="adm-search" style="width:140px">
-        <option value="">Barchasi</option>
-        <option value="verified" {% if request.args.get('filter')=='verified' %}selected{% endif %}>✅ Verified</option>
-        <option value="banned" {% if request.args.get('filter')=='banned' %}selected{% endif %}>🚫 Banned</option>
-        <option value="admin" {% if request.args.get('filter')=='admin' %}selected{% endif %}>👑 Admin</option>
-      </select>
-      <button type="submit" class="btn-adm btn-adm-p">Qidirish</button>
-      {% if q or request.args.get('filter') %}<a href="/admin/users" class="btn-adm btn-adm-o">Tozalash</a>{% endif %}
-    </form>
-    <span style="color:#64748b;font-size:13px">{{ users|length }} ta</span>
-  </div>
+<div class="adm-hd"><h1>👥 Foydalanuvchilar ({{ users|length }})</h1></div>
+<div class="sc-stat" data-anim>
   <div style="overflow-x:auto">
   <table class="dt">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Foydalanuvchi</th>
-        <th>Telefon</th>
-        <th>Viloyat</th>
-        <th>Reyting</th>
-        <th>Holat</th>
-        <th>Sana</th>
-        <th>Amallar</th>
-      </tr>
-    </thead>
+    <thead><tr><th>#</th><th>Login</th><th>Ism</th><th>Telefon</th><th>Viloyat</th><th>Savdo</th><th>Reyting</th><th>Holat</th><th>Amallar</th></tr></thead>
     <tbody>
     {% for u in users %}
     <tr>
-      <td style="color:#475569;font-size:12px">{{ u.id }}</td>
+      <td style="color:#94a3b8">{{ u.id }}</td>
+      <td><a href="/user/{{ u.username }}" style="color:var(--g);font-weight:600">{{ u.username }}</a></td>
+      <td>{{ u.full_name or '—' }}</td>
+      <td>{{ u.phone or '—' }}</td>
+      <td>{{ u.region or '—' }}</td>
+      <td style="font-weight:600">{{ u.total_sales }}</td>
+      <td>⭐ {{ "%.1f"|format(u.rating) }}</td>
       <td>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px;flex-shrink:0">{{ u.avatar_letter or u.username[0].upper() }}</div>
-          <div>
-            <a href="/user/{{ u.username }}" style="color:#22c55e;font-weight:600;font-size:13px">{{ u.username }}</a>
-            <div style="font-size:11px;color:#64748b">{{ u.full_name or '—' }}</div>
-            {% if u.email %}<div style="font-size:11px;color:#475569">{{ u.email }}</div>{% endif %}
-          </div>
-        </div>
-      </td>
-      <td style="font-size:13px">{{ u.phone or '—' }}</td>
-      <td style="font-size:13px">{{ u.region or '—' }}</td>
-      <td>
-        <span style="color:#f59e0b;font-weight:700">⭐ {{ u.rating or 5.0 }}</span>
-        <div style="font-size:11px;color:#475569">{{ u.total_sales }} sotuv</div>
+        {% if u.is_admin %}<span class="badge b-rd">Admin</span>
+        {% elif u.is_verified %}<span class="badge b-gr">✅ Tasdiqlangan</span>
+        {% else %}<span class="badge b-yw">Yangi</span>{% endif %}
       </td>
       <td>
-        <div style="display:flex;flex-direction:column;gap:3px">
-          {% if u.is_admin %}<span class="badge b-pr">👑 Admin</span>{% endif %}
-          {% if u.is_verified %}<span class="badge b-gr">✅ Verified</span>{% endif %}
-          {% if u.is_banned %}<span class="badge b-rd">🚫 Banned</span>{% endif %}
-          {% if not u.is_admin and not u.is_verified and not u.is_banned %}<span class="badge b-yw">Yangi</span>{% endif %}
-        </div>
-      </td>
-      <td style="font-size:11px;color:#475569;white-space:nowrap">{{ u.created_at[:10] if u.created_at else '—' }}</td>
-      <td>
-        <div style="display:flex;gap:4px;flex-wrap:wrap">
-          <form method="post" action="/admin/users/{{ u.id }}/verify" style="display:inline">
-            <button class="btn-adm {{ 'btn-adm-p' if not u.is_verified else 'btn-adm-o' }}" style="padding:5px 10px;font-size:11px" title="{{ 'Tasdiqlash' if not u.is_verified else 'Tasdiqni olish' }}">
-              {{ '✅' if not u.is_verified else '❌' }}
-            </button>
-          </form>
+        <div style="display:flex;gap:5px">
           {% if not u.is_admin %}
-          <form method="post" action="/admin/users/{{ u.id }}/ban" style="display:inline">
-            <button class="btn-adm {{ 'btn-adm-d' if not u.is_banned else 'btn-adm-p' }}" style="padding:5px 10px;font-size:11px" title="{{ 'Ban' if not u.is_banned else 'Unban' }}">
-              {{ '🚫' if not u.is_banned else '🔓' }}
+          <form method="post" action="/admin/users/{{ u.id }}/verify" style="display:inline">
+            <button type="submit" class="btn btn-sm {% if u.is_verified %}btn-d{% else %}btn-o{% endif %}" style="padding:5px 10px;font-size:12px">
+              {% if u.is_verified %}✕ Bekor{% else %}✅ Tasdiqlash{% endif %}
             </button>
           </form>
-          <form method="post" action="/admin/users/{{ u.id }}/make-admin" style="display:inline">
-            <button class="btn-adm btn-adm-o" style="padding:5px 10px;font-size:11px" title="Admin qilish">👑</button>
+          <form method="post" action="/admin/users/{{ u.id }}/delete" style="display:inline" onsubmit="return confirm('O\'chirishni tasdiqlaysizmi?')">
+            <button type="submit" class="btn btn-d btn-sm" style="padding:5px 10px;font-size:12px">🗑</button>
           </form>
-          <form method="post" action="/admin/users/{{ u.id }}/delete" style="display:inline" onsubmit="return confirm('{{ u.username }} ni o\'chirish?')">
-            <button class="btn-adm btn-adm-d" style="padding:5px 10px;font-size:11px">🗑</button>
-          </form>
+          {% else %}
+          <span style="font-size:12px;color:#94a3b8">Admin</span>
           {% endif %}
         </div>
       </td>

@@ -1,114 +1,71 @@
-{% extends 'admin/base.html' %}
-{% block title %}Dashboard{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
-{% block page_sub %}Umumiy ko'rinish — bugungi holat{% endblock %}
+{% extends 'admin/base.html' %}{% block title %}Dashboard{% endblock %}
 {% block content %}
+<div class="adm-hd"><h1>📊 Dashboard</h1><p style="color:#64748b;margin-top:4px">Umumiy ko'rinish</p></div>
 
-<div class="adm-stats" id="statsGrid">
-  {% for icon,label,val,color,bg,key in [
-    ('👥','Foydalanuvchilar',stats.users,'#22c55e','rgba(34,197,94,.1)','users'),
-    ('📋','Barcha e\'lonlar',stats.listings,'#3b82f6','rgba(59,130,246,.1)','listings'),
-    ('✅','Faol e\'lonlar',stats.active,'#f59e0b','rgba(245,158,11,.1)','active'),
-    ('💰','Sotilgan',stats.sold,'#10b981','rgba(16,185,129,.1)','sold'),
-    ('💬','Xabarlar',stats.msgs,'#8b5cf6','rgba(139,92,246,.1)','msgs'),
-    ('🚫','Banned',0,'#ef4444','rgba(239,68,68,.1)','banned'),
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px;margin-bottom:28px">
+  {% for icon,label,val,color in [
+    ('👥','Foydalanuvchilar',stats.users,'#22c55e'),
+    ('📋','Barcha e\'lonlar',stats.listings,'#3b82f6'),
+    ('✅','Faol e\'lonlar',stats.active,'#f59e0b'),
+    ('💰','Sotilgan',stats.sold,'#10b981'),
+    ('💬','Xabarlar',stats.msgs,'#8b5cf6'),
+    ('⭐','Sharhlar',stats.reviews,'#ef4444'),
   ] %}
-  <div class="adm-stat" data-key="{{ key }}">
-    <div class="adm-stat-icon" style="background:{{ bg }};font-size:20px">{{ icon }}</div>
-    <div class="adm-stat-n" style="color:{{ color }}" data-val="{{ key }}">{{ val }}</div>
-    <div class="adm-stat-label">{{ label }}</div>
+  <div class="sc-stat" data-anim>
+    <div style="font-size:28px;margin-bottom:8px">{{ icon }}</div>
+    <div class="sc-stat-n" style="color:{{ color }}">{{ val }}</div>
+    <div style="font-size:13px;color:#64748b;margin-top:4px">{{ label }}</div>
   </div>
   {% endfor %}
 </div>
 
-<div class="adm-grid2">
-  <div class="adm-card">
-    <div class="adm-card-head">
-      <span class="adm-card-title">👥 So'nggi foydalanuvchilar</span>
-      <a href="/admin/users" class="btn-adm btn-adm-o">Barchasi →</a>
-    </div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+  <div class="sc-stat" data-anim>
+    <h3 style="font-size:17px;font-weight:700;margin-bottom:16px">👥 So'nggi foydalanuvchilar</h3>
     <table class="dt">
-      <thead><tr><th>#</th><th>Login</th><th>Viloyat</th><th>Holat</th><th>Amal</th></tr></thead>
+      <thead><tr><th>#</th><th>Login</th><th>Ism</th><th>Viloyat</th><th>Holat</th></tr></thead>
       <tbody>
       {% for u in recent_users %}
       <tr>
-        <td style="color:#475569">{{ u.id }}</td>
-        <td>
-          <a href="/user/{{ u.username }}" style="color:#22c55e;font-weight:600">{{ u.username }}</a>
-          <div style="font-size:11px;color:#475569">{{ u.full_name or '' }}</div>
-        </td>
+        <td style="color:#94a3b8">{{ u.id }}</td>
+        <td><a href="/user/{{ u.username }}" style="color:var(--g);font-weight:600">{{ u.username }}</a></td>
+        <td>{{ u.full_name or '—' }}</td>
         <td>{{ u.region or '—' }}</td>
         <td>
-          {% if u.is_admin %}<span class="badge b-pr">Admin</span>
-          {% elif u.is_banned %}<span class="badge b-rd">🚫 Banned</span>
-          {% elif u.is_verified %}<span class="badge b-gr">✅ Verified</span>
+          {% if u.is_admin %}<span class="badge b-rd">Admin</span>
+          {% elif u.is_verified %}<span class="badge b-gr">✅</span>
           {% else %}<span class="badge b-yw">Yangi</span>{% endif %}
-        </td>
-        <td>
-          <div style="display:flex;gap:4px">
-            <form method="post" action="/admin/users/{{ u.id }}/verify" style="display:inline">
-              <button class="btn-adm btn-adm-o" style="padding:4px 8px;font-size:11px" title="Verifikatsiya">✅</button>
-            </form>
-            {% if not u.is_admin %}
-            <form method="post" action="/admin/users/{{ u.id }}/ban" style="display:inline">
-              <button class="btn-adm btn-adm-d" style="padding:4px 8px;font-size:11px" title="{{ 'Unban' if u.is_banned else 'Ban' }}">{{ '🔓' if u.is_banned else '🚫' }}</button>
-            </form>
-            {% endif %}
-          </div>
         </td>
       </tr>
       {% endfor %}
       </tbody>
     </table>
+    <div style="margin-top:12px"><a href="/admin/users" class="btn btn-o btn-sm">Barchasi →</a></div>
   </div>
 
-  <div class="adm-card">
-    <div class="adm-card-head">
-      <span class="adm-card-title">📋 So'nggi e'lonlar</span>
-      <a href="/admin/listings" class="btn-adm btn-adm-o">Barchasi →</a>
-    </div>
+  <div class="sc-stat" data-anim>
+    <h3 style="font-size:17px;font-weight:700;margin-bottom:16px">📋 So'nggi e'lonlar</h3>
     <table class="dt">
-      <thead><tr><th>E'lon</th><th>Narx</th><th>Holat</th><th>Amal</th></tr></thead>
+      <thead><tr><th>E'lon</th><th>Narx</th><th>Holat</th></tr></thead>
       <tbody>
       {% for item in recent_listings %}
       <tr>
         <td>
-          <a href="/listing/{{ item.id }}" style="color:#22c55e;font-weight:600">{{ item.animal_emoji }} {{ item.title[:18] }}{% if item.title|length>18 %}...{% endif %}</a>
-          <div style="font-size:11px;color:#475569">{{ item.username }}</div>
+          <a href="/listing/{{ item.id }}" style="color:var(--g);font-weight:600">{{ item.animal_emoji }} {{ item.title[:24] }}...</a>
+          <div style="font-size:11px;color:#94a3b8">{{ item.username }}</div>
         </td>
-        <td style="font-weight:700;color:#22c55e;white-space:nowrap">{{ item.price|fmt }}</td>
+        <td style="font-weight:700;color:#16a34a">{{ item.price|fmt }}</td>
         <td>
           {% if item.is_sold %}<span class="badge b-rd">Sotildi</span>
-          {% elif item.is_premium %}<span class="badge b-pr">⭐ Premium</span>
           {% elif item.is_active %}<span class="badge b-gr">Faol</span>
           {% else %}<span class="badge b-yw">To'xtatilgan</span>{% endif %}
-        </td>
-        <td>
-          <div style="display:flex;gap:4px">
-            <form method="post" action="/admin/listings/{{ item.id }}/premium" style="display:inline">
-              <button class="btn-adm btn-adm-o" style="padding:4px 8px;font-size:11px" title="Premium">⭐</button>
-            </form>
-            <form method="post" action="/admin/listings/{{ item.id }}/delete" style="display:inline" onsubmit="return confirm('O\'chirish?')">
-              <button class="btn-adm btn-adm-d" style="padding:4px 8px;font-size:11px">🗑</button>
-            </form>
-          </div>
+          {% if item.is_premium %}<span class="badge" style="background:#fef3c7;color:#92400e">⭐</span>{% endif %}
         </td>
       </tr>
       {% endfor %}
       </tbody>
     </table>
+    <div style="margin-top:12px"><a href="/admin/listings" class="btn btn-o btn-sm">Barchasi →</a></div>
   </div>
 </div>
-
-<script>
-function refreshStats(){
-  fetch('/admin/stats-api').then(r=>r.json()).then(data=>{
-    Object.keys(data).forEach(k=>{
-      const el=document.querySelector('[data-val="'+k+'"]');
-      if(el) el.textContent=data[k];
-    });
-  });
-}
-setInterval(refreshStats,30000);
-</script>
 {% endblock %}
