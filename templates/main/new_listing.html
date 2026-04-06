@@ -1,20 +1,57 @@
 {% extends 'main/base.html' %}{% block title %}Yangi e'lon{% endblock %}
 {% block content %}
 <div class="pw">
-<div class="cn" style="padding-top:32px;padding-bottom:60px;max-width:760px">
-  <h1 style="font-size:30px;font-weight:800;margin-bottom:6px" data-anim>➕ Yangi <span class="gt">e'lon</span> joylash</h1>
-  <p style="color:var(--mt);margin-bottom:28px" data-anim>2 daqiqada e'lon joylaing va xaridorlar bilan bog'laning</p>
-  <div class="sc afu">
-    <form method="post">
-      <div class="fgroup"><label class="flabel">📝 E'lon sarlavhasi *</label><input name="title" class="fctrl" placeholder="Masalan: Sut sigiri — Holstein zoti" required/></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-        <div class="fgroup"><label class="flabel">🐾 Hayvon turi *</label>
-          <select name="animal_slug" class="fctrl" required>
-            <option value="">Tanlang</option>
-            {% for slug,emoji,name in animal_types %}<option value="{{ slug }}">{{ emoji }} {{ name }}</option>{% endfor %}
+<div class="cn" style="padding-top:24px;padding-bottom:80px;max-width:680px">
+
+  <!-- Header -->
+  <div style="margin-bottom:24px" data-anim>
+    <h1 style="font-size:clamp(22px,5vw,30px);font-weight:800;margin-bottom:4px">➕ Yangi <span class="gt">e'lon</span></h1>
+    <p style="color:var(--mt);font-size:14px">2 daqiqada e'lon joylaing va xaridorlar bilan bog'laning</p>
+  </div>
+
+  <form method="post" id="newListingForm">
+
+    <!-- Step 1: Animal type -->
+    <div class="sc afu" style="margin-bottom:16px;padding:20px">
+      <div style="font-size:13px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">1️⃣ Hayvon turi</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-bottom:14px" id="animalPicker">
+        {% for slug,emoji,name in animal_types %}
+        <label style="cursor:pointer">
+          <input type="radio" name="animal_slug" value="{{ slug }}" style="display:none" required>
+          <div class="animal-pick-btn" data-slug="{{ slug }}">
+            <div style="font-size:28px;margin-bottom:2px">{{ emoji }}</div>
+            <div style="font-size:11px;font-weight:600">{{ name }}</div>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Step 2: Main info -->
+    <div class="sc afu" style="margin-bottom:16px;padding:20px">
+      <div style="font-size:13px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">2️⃣ Asosiy ma'lumotlar</div>
+      <div class="fgroup"><label class="flabel">📝 Sarlavha *</label><input name="title" class="fctrl" placeholder="Masalan: Sut sigiri — Holstein zoti" required/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="fgroup"><label class="flabel">💰 Narx (so'm) *</label><input name="price" type="number" class="fctrl" placeholder="12000000" required/></div>
+        <div class="fgroup"><label class="flabel">🔢 Soni</label><input name="count" type="number" value="1" min="1" class="fctrl"/></div>
+        <div class="fgroup"><label class="flabel">🕐 Yoshi</label><input name="age" class="fctrl" placeholder="3 yosh"/></div>
+        <div class="fgroup"><label class="flabel">♂️ Jinsi</label>
+          <select name="gender" class="fctrl">
+            <option value="">Nomalum</option>
+            <option>Erkak</option>
+            <option>Urg'ochi</option>
+            <option>Aralash</option>
           </select>
         </div>
-        <div class="fgroup"><label class="flabel">💰 Narx (so'm) *</label><input name="price" type="number" class="fctrl" placeholder="12000000" required/></div>
+        <div class="fgroup"><label class="flabel">🧬 Zoti</label><input name="breed" class="fctrl" placeholder="Holstein..."/></div>
+        <div class="fgroup"><label class="flabel">⚖️ Vazni</label><input name="weight" class="fctrl" placeholder="350 kg"/></div>
+      </div>
+    </div>
+
+    <!-- Step 3: Location -->
+    <div class="sc afu" style="margin-bottom:16px;padding:20px">
+      <div style="font-size:13px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">3️⃣ Joylashuv</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="fgroup"><label class="flabel">📍 Viloyat *</label>
           <select name="region" class="fctrl" required>
             <option value="">Tanlang</option>
@@ -22,22 +59,51 @@
           </select>
         </div>
         <div class="fgroup"><label class="flabel">🏘 Tuman</label><input name="district" class="fctrl" placeholder="Tuman nomi"/></div>
-        <div class="fgroup"><label class="flabel">🔢 Soni</label><input name="count" type="number" value="1" min="1" class="fctrl"/></div>
-        <div class="fgroup"><label class="flabel">🕐 Yoshi</label><input name="age" class="fctrl" placeholder="3 yosh, 2-4 yosh..."/></div>
-        <div class="fgroup"><label class="flabel">♂️ Jinsi</label>
-          <select name="gender" class="fctrl"><option value="">Nomalum</option><option>Erkak</option><option>Urg'ochi</option><option>Aralash</option></select>
-        </div>
-        <div class="fgroup"><label class="flabel">🧬 Zoti</label><input name="breed" class="fctrl" placeholder="Holstein, Gissar..."/></div>
-        <div class="fgroup"><label class="flabel">⚖️ Vazni</label><input name="weight" class="fctrl" placeholder="350 kg"/></div>
       </div>
-      <div class="fgroup"><label class="flabel">📄 Tavsif</label><textarea name="description" class="fctrl" rows="4" placeholder="Hayvon haqida qo'shimcha ma'lumot..."></textarea></div>
-      <div style="display:flex;gap:10px;margin-top:8px">
-        <button type="submit" class="btn btn-p btn-lg">🚀 E'lonni joylash</button>
-        <a href="/my-listings" class="btn btn-o btn-lg">Bekor qilish</a>
+    </div>
+
+    <!-- Step 4: Description -->
+    <div class="sc afu" style="margin-bottom:24px;padding:20px">
+      <div style="font-size:13px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">4️⃣ Tavsif</div>
+      <div class="fgroup" style="margin-bottom:0">
+        <textarea name="description" class="fctrl" rows="4" placeholder="Hayvon haqida qo'shimcha ma'lumot: sog'lig'i, oziqlanishi, xususiyatlari..."></textarea>
       </div>
-    </form>
-  </div>
+    </div>
+
+    <!-- Submit -->
+    <div style="display:flex;gap:10px">
+      <button type="submit" class="btn btn-p btn-lg" style="flex:1">🚀 E'lonni joylash</button>
+      <a href="/my-listings" class="btn btn-o btn-lg">❌</a>
+    </div>
+
+  </form>
 </div>
 </div>
-<style>@media(max-width:600px){form > div[style*="grid"]{grid-template-columns:1fr!important}}</style>
+
+<style>
+.animal-pick-btn{
+  text-align:center;padding:10px 6px;border-radius:12px;border:2px solid var(--bdr);
+  background:var(--bg3);transition:.15s;user-select:none;
+}
+.animal-pick-btn:hover{border-color:var(--g);background:var(--gl)}
+.animal-pick-btn.selected{border-color:var(--g);background:var(--gl);color:var(--gd)}
+@media(max-width:600px){
+  form > div > div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+}
+</style>
+<script>
+document.querySelectorAll('#animalPicker label').forEach(label=>{
+  label.addEventListener('click',()=>{
+    document.querySelectorAll('.animal-pick-btn').forEach(b=>b.classList.remove('selected'));
+    label.querySelector('.animal-pick-btn').classList.add('selected');
+  });
+});
+// Format price input
+const priceInput = document.querySelector('input[name="price"]');
+if(priceInput){
+  priceInput.addEventListener('input',function(){
+    if(this.value < 0) this.value = 0;
+  });
+}
+</script>
 {% endblock %}
