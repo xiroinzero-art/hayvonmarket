@@ -74,7 +74,13 @@
     <div class="g4">
       {% for item in premium %}
       <a href="/listing/{{ item.id }}" class="card" data-anim style="text-decoration:none;color:inherit">
-        <div class="card-img {% if item.is_premium %}premium{% endif %}">{{ item.animal_emoji }}</div>
+        <div class="card-img {% if item.is_premium %}premium{% endif %}">
+          {% if item.photos %}
+            <img src="/static/uploads/{{ item.photos.split(',')[0] }}" alt="{{ item.title }}" loading="lazy"/>
+          {% else %}
+            <img src="{{ animal_images.get(item.animal_slug, 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80') }}" alt="{{ item.animal_name }}" loading="lazy"/>
+          {% endif %}
+        </div>
         <div class="card-body">
           <div class="card-tit">{{ item.title }}</div>
           <div class="card-tags">
@@ -139,7 +145,13 @@
     <div class="g4">
       {% for item in recent %}
       <a href="/listing/{{ item.id }}" class="card" data-anim style="text-decoration:none;color:inherit;animation-delay:{{ loop.index0 * 0.05 }}s">
-        <div class="card-img {% if item.is_premium %}premium{% endif %}">{{ item.animal_emoji }}</div>
+        <div class="card-img {% if item.is_premium %}premium{% endif %}">
+          {% if item.photos %}
+            <img src="/static/uploads/{{ item.photos.split(',')[0] }}" alt="{{ item.title }}" loading="lazy"/>
+          {% else %}
+            <img src="{{ animal_images.get(item.animal_slug, 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80') }}" alt="{{ item.animal_name }}" loading="lazy"/>
+          {% endif %}
+        </div>
         <div class="card-body">
           <div class="card-tit">{{ item.title }}</div>
           <div class="card-tags">

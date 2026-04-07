@@ -9,7 +9,10 @@
   <div style="display:flex;flex-direction:column;gap:14px">
     {% for item in items %}
     <div class="sc" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap" data-anim>
-      <div style="font-size:52px;background:var(--bg);border-radius:14px;width:72px;height:72px;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ item.animal_emoji }}</div>
+      <div style="border-radius:14px;width:72px;height:72px;flex-shrink:0;overflow:hidden">
+        {% if item.photos %}<img src="/static/uploads/{{ item.photos.split(',')[0] }}" style="width:100%;height:100%;object-fit:cover"/>
+        {% else %}<img src="{{ animal_images.get(item.animal_slug, 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80') }}" style="width:100%;height:100%;object-fit:cover"/>{% endif %}
+      </div>
       <div style="flex:1;min-width:200px">
         <div style="font-weight:700;font-size:16px;margin-bottom:4px">{{ item.title }}</div>
         <div style="font-size:13px;color:var(--mt)">📍 {{ item.region }} · 👁 {{ item.views }} · {{ item.created_at[:10] }}</div>

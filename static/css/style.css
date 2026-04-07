@@ -566,3 +566,23 @@ select.fctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
   .card-price{font-size:14px}
   .hero-h1{font-size:22px}
 }
+
+/* ══ NAVBAR FIX ═════════════════════════════════════ */
+.nv-in{flex-wrap:nowrap;overflow:hidden}
+.nv-right{gap:4px;flex-shrink:0}
+.nbtn{white-space:nowrap;font-size:13px;padding:7px 10px}
+@media(max-width:1200px){.nv-hide-md{display:none!important}}
+@media(max-width:1050px){.nv-links a:not(.on){display:none}.nv-links .nvd:nth-child(n+3){display:none}}
+@media(max-width:900px){
+  .nv-links{display:none!important}
+  #nvTog{display:block!important}
+  .nv-right{gap:4px}
+  .nbtn{padding:6px 8px;font-size:12px}
+}
+
+/* ══ REAL ANIMAL IMAGES ═════════════════════════════ */
+.animal-img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.card-img{overflow:hidden;position:relative}
+.card-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.card-img:hover img{transform:scale(1.05)}
+.card-img .emoji-fallback{font-size:60px;display:flex;align-items:center;justify-content:center;height:100%;width:100%}

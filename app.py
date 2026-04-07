@@ -34,6 +34,21 @@ ANIMAL_TYPES = [
     ('tuyoqli',  '🐪', "Tuya"),
     ('boshqa',   '🐾', "Boshqa"),
 ]
+
+# Real animal images (Unsplash)
+ANIMAL_IMAGES = {
+    'sigir':   'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=400&q=80',
+    'qoy':     'https://images.unsplash.com/photo-1484557985045-edf25e08da73?w=400&q=80',
+    'echki':   'https://images.unsplash.com/photo-1524024973431-2ad916746881?w=400&q=80',
+    'ot':      'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400&q=80',
+    'tovuq':   'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=400&q=80',
+    'o_rdak':  'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=400&q=80',
+    'g_oz':    'https://images.unsplash.com/photo-1501706362039-c06b2d715385?w=400&q=80',
+    'quyon':   'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=400&q=80',
+    'qoramol': 'https://images.unsplash.com/photo-1596733430284-f7437764b1a9?w=400&q=80',
+    'tuyoqli': 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=400&q=80',
+    'boshqa':  'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&q=80',
+}
 REGIONS = ['Toshkent sh.','Toshkent vil.','Samarqand','Buxoro',
            "Andijon","Farg'ona","Namangan","Qashqadaryo",
            "Surxondaryo","Xorazm","Navoiy","Jizzax","Sirdaryo",
@@ -269,6 +284,7 @@ def _ctx():
         favs   = get_db().execute("SELECT COUNT(*) FROM favorites WHERE user_id=?",(u['id'],)).fetchone()[0]
     return dict(me=u, unread=unread, fav_count=favs,
                 animal_types=ANIMAL_TYPES, regions=REGIONS,
+                animal_images=ANIMAL_IMAGES,
                 now=datetime.now())
 
 def fmt(v):
