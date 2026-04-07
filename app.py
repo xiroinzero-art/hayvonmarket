@@ -281,14 +281,20 @@ app.jinja_env.filters['stars'] = lambda r: '⭐'*int(r or 5)+'☆'*(5-int(r or 5
 @app.route('/')
 def home():
     db = get_db()
-    premium = db.execute("""SELECT l.*,u.full_name,u.rating,u.is_verified,u.username
-        FROM listings l JOIN users u ON l.user_id=u.id
-        WHERE l.is_active=1 AND l.is_sold=0 AND l.is_premium=1
-        ORDER BY l.created_at DESC LIMIT 4""").fetchall()
-    recent = db.execute("""SELECT l.*,u.full_name,u.rating,u.is_verified,u.username
-        FROM listings l JOIN users u ON l.user_id=u.id
-        WHERE l.is_active=1 AND l.is_sold=0
-        ORDER BY l.created_at DESC LIMIT 8""").fetchall()
+    try:
+        premium = db.execute("""SELECT l.*,u.full_name,u.rating,u.is_verified,u.username
+            FROM listings l JOIN users u ON l.user_id=u.id
+            WHERE l.is_active=1 AND l.is_sold=0 AND l.is_premium=1
+            ORDER BY l.created_at DESC LIMIT 4""").fetchall()
+    except:
+        premium = []
+    try:
+        recent = db.execute("""SELECT l.*,u.full_name,u.rating,u.is_verified,u.username
+            FROM listings l JOIN users u ON l.user_id=u.id
+            WHERE l.is_active=1 AND l.is_sold=0
+            ORDER BY l.created_at DESC LIMIT 8""").fetchall()
+    except:
+        recent = []
     stats = dict(
         listings = db.execute("SELECT COUNT(*) FROM listings WHERE is_active=1").fetchone()[0],
         users    = db.execute("SELECT COUNT(*) FROM users WHERE is_admin=0").fetchone()[0],
