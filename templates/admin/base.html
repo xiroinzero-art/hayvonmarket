@@ -2,42 +2,161 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Admin — {% block title %}{% endblock %}</title>
+<title>Admin — {% block title %}{% endblock %} | HayvonMarket</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="/static/css/style.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;display:flex}
+.adm-layout{display:flex;min-height:100vh;width:100%}
+.adm-sb{width:240px;background:#1e293b;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:.3s}
+.adm-logo{padding:20px 18px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
+.adm-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.adm-logo-text{font-size:15px;font-weight:700;color:#fff}
+.adm-logo-sub{font-size:11px;color:#64748b}
+.adm-nav{padding:12px 10px;flex:1;overflow-y:auto}
+.adm-nav-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#475569;padding:8px 8px 4px;margin-top:8px}
+.adm-lnk{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:#94a3b8;text-decoration:none;font-size:13px;font-weight:500;transition:.15s;margin-bottom:2px}
+.adm-lnk:hover{background:rgba(255,255,255,.06);color:#e2e8f0}
+.adm-lnk.on{background:rgba(34,197,94,.12);color:#22c55e}
+.adm-lnk svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.adm-lnk-danger{color:#ef4444!important}
+.adm-lnk-danger:hover{background:rgba(239,68,68,.1)!important;color:#ef4444!important}
+.adm-user{padding:14px 18px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
+.adm-avatar{width:34px;height:34px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.adm-user-name{font-size:13px;font-weight:600;color:#e2e8f0}
+.adm-user-role{font-size:11px;color:#64748b}
+.adm-c{margin-left:240px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+.adm-topbar{background:#1e293b;border-bottom:1px solid rgba(255,255,255,.06);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.adm-page-title{font-size:18px;font-weight:700;color:#fff}
+.adm-page-sub{font-size:12px;color:#64748b;margin-top:2px}
+.adm-badge{background:#22c55e;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.adm-body{padding:24px;flex:1}
+.adm-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.adm-stat{background:#1e293b;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:18px;transition:.2s}
+.adm-stat:hover{border-color:rgba(34,197,94,.3);transform:translateY(-1px)}
+.adm-stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+.adm-stat-n{font-size:26px;font-weight:800;color:#fff;line-height:1}
+.adm-stat-label{font-size:12px;color:#64748b;margin-top:5px}
+.adm-grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.adm-card{background:#1e293b;border:1px solid rgba(255,255,255,.06);border-radius:14px;overflow:hidden;margin-bottom:20px}
+.adm-card-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.adm-card-title{font-size:15px;font-weight:700;color:#fff}
+.dt{width:100%;border-collapse:collapse;font-size:13px}
+.dt th{padding:11px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#475569;background:#162032;border-bottom:1px solid rgba(255,255,255,.05)}
+.dt td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);color:#cbd5e1;vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.b-gr{background:rgba(34,197,94,.15);color:#22c55e}
+.b-rd{background:rgba(239,68,68,.15);color:#ef4444}
+.b-yw{background:rgba(245,158,11,.15);color:#f59e0b}
+.b-bl{background:rgba(59,130,246,.15);color:#3b82f6}
+.b-pr{background:rgba(139,92,246,.15);color:#8b5cf6}
+.btn-adm{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;text-decoration:none;transition:.15s;font-family:inherit}
+.btn-adm-p{background:#22c55e;color:#fff}
+.btn-adm-p:hover{background:#16a34a}
+.btn-adm-o{background:transparent;color:#94a3b8;border:1px solid rgba(255,255,255,.1)}
+.btn-adm-o:hover{background:rgba(255,255,255,.06);color:#e2e8f0}
+.btn-adm-d{background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+.btn-adm-d:hover{background:rgba(239,68,68,.1)}
+.flash{padding:12px 16px;border-radius:10px;margin-bottom:16px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+.flash-success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#22c55e}
+.flash-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#ef4444}
+.flash-info{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:#3b82f6}
+.adm-search{background:#0f172a;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 12px;color:#e2e8f0;font-size:13px;font-family:inherit;outline:none;width:220px}
+.adm-search:focus{border-color:#22c55e}
+.adm-mob-toggle{display:none;background:none;border:none;color:#94a3b8;cursor:pointer;padding:4px}
+@media(max-width:768px){
+  .adm-sb{transform:translateX(-100%)}
+  .adm-sb.open{transform:translateX(0)}
+  .adm-c{margin-left:0}
+  .adm-mob-toggle{display:flex}
+  .adm-body{padding:14px}
+  .adm-stats{grid-template-columns:repeat(2,1fr);gap:10px}
+  .adm-grid2{grid-template-columns:1fr}
+  .adm-search{width:140px}
+}
+</style>
 </head>
-<body style="background:#f8fafc">
+<body>
 <div id="toast"></div>
+<div class="adm-layout">
 
-<!-- Admin sidebar -->
-<aside class="adm-sb">
-  <div class="adm-logo">⚙️ Admin Panel</div>
+<aside class="adm-sb" id="admSb">
+  <div class="adm-logo">
+    <div class="adm-logo-icon">🐄</div>
+    <div>
+      <div class="adm-logo-text">HayvonMarket</div>
+      <div class="adm-logo-sub">Admin Panel</div>
+    </div>
+  </div>
   <nav class="adm-nav">
-    <a href="/admin/"          class="adm-lnk {% if request.path=='/admin/' %}on{% endif %}">📊 Dashboard</a>
-    <a href="/admin/users"     class="adm-lnk {% if '/admin/users' in request.path %}on{% endif %}">👥 Foydalanuvchilar</a>
-    <a href="/admin/listings"  class="adm-lnk {% if '/admin/listings' in request.path %}on{% endif %}">📋 E'lonlar</a>
-    <div style="height:1px;background:rgba(255,255,255,.08);margin:12px 0"></div>
-    <a href="/" class="adm-lnk">🏠 Saytga</a>
-    <a href="/logout" class="adm-lnk" style="margin-top:auto;color:#ef4444">🚪 Chiqish</a>
+    <div class="adm-nav-section">Asosiy</div>
+    <a href="/admin/" class="adm-lnk {% if request.path=='/admin/' %}on{% endif %}">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="/admin/users" class="adm-lnk {% if '/admin/users' in request.path %}on{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Foydalanuvchilar
+    </a>
+    <a href="/admin/listings" class="adm-lnk {% if '/admin/listings' in request.path %}on{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      E'lonlar
+    </a>
+    <div style="height:1px;background:rgba(255,255,255,.06);margin:10px 0"></div>
+    <div class="adm-nav-section">Boshqa</div>
+    <a href="/" class="adm-lnk">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      Saytga qaytish
+    </a>
+    <a href="/logout" class="adm-lnk adm-lnk-danger">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Chiqish
+    </a>
   </nav>
-  <div style="padding:16px 18px;border-top:1px solid rgba(255,255,255,.08)">
-    <div style="font-size:12px;color:#64748b">Kirgan:</div>
-    <div style="font-weight:600;color:#fff;font-size:14px">{{ me.username }}</div>
+  <div class="adm-user">
+    <div class="adm-avatar">{{ me.avatar_letter or me.username[0].upper() }}</div>
+    <div>
+      <div class="adm-user-name">{{ me.username }}</div>
+      <div class="adm-user-role">Administrator</div>
+    </div>
   </div>
 </aside>
 
 <main class="adm-c">
-  {% with msgs = get_flashed_messages(with_categories=true) %}
-  {% for cat,msg in msgs %}
-  <div style="padding:12px 16px;border-radius:12px;margin-bottom:14px;font-size:14px;font-weight:500;background:{% if cat=='success' %}#f0fdf4;border:1px solid #bbf7d0;color:#166534{% elif cat=='error' %}#fef2f2;border:1px solid #fca5a5;color:#dc2626{% else %}#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8{% endif %}">
-    {% if cat=='success' %}✅{% elif cat=='error' %}❌{% else %}ℹ️{% endif %} {{ msg }}
+  <div class="adm-topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="adm-mob-toggle" onclick="document.getElementById('admSb').classList.toggle('open')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div>
+        <div class="adm-page-title">{% block page_title %}Dashboard{% endblock %}</div>
+        <div class="adm-page-sub">{% block page_sub %}{% endblock %}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="adm-badge">Admin</span>
+    </div>
   </div>
-  {% endfor %}
-  {% endwith %}
-  {% block content %}{% endblock %}
+  <div class="adm-body">
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat,msg in msgs %}
+    <div class="flash flash-{{ 'success' if cat=='success' else 'error' if cat=='error' else 'info' }}">
+      {{ '✅' if cat=='success' else '❌' if cat=='error' else 'ℹ️' }} {{ msg }}
+    </div>
+    {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
 </main>
-
-<script src="/static/js/main.js"></script>
+</div>
+<script>
+document.addEventListener('click',function(e){
+  const sb=document.getElementById('admSb');
+  if(sb&&sb.classList.contains('open')&&!sb.contains(e.target))sb.classList.remove('open');
+});
+</script>
 </body>
 </html>

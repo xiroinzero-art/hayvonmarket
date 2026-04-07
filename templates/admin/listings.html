@@ -1,40 +1,68 @@
-{% extends 'admin/base.html' %}{% block title %}E'lonlar{% endblock %}
+{% extends 'admin/base.html' %}
+{% block title %}E'lonlar{% endblock %}
+{% block page_title %}📋 E'lonlar{% endblock %}
+{% block page_sub %}Barcha e'lonlarni boshqarish{% endblock %}
 {% block content %}
-<div class="adm-hd" style="display:flex;align-items:center;justify-content:space-between">
-  <h1>📋 E'lonlar ({{ items|length }})</h1>
-</div>
-<div class="sc-stat" data-anim>
+
+<div class="adm-card">
+  <div class="adm-card-head">
+    <span style="color:#64748b;font-size:13px">Jami: <b style="color:#fff">{{ items|length }}</b> ta e'lon</span>
+    <div style="display:flex;gap:8px">
+      <a href="/catalog" target="_blank" class="btn-adm btn-adm-o">🌐 Saytda ko'rish</a>
+    </div>
+  </div>
   <div style="overflow-x:auto">
   <table class="dt">
-    <thead><tr><th>#</th><th>E'lon</th><th>Sotuvchi</th><th>Narx</th><th>Viloyat</th><th>Ko'rish</th><th>Holat</th><th>Amallar</th></tr></thead>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>E'lon</th>
+        <th>Sotuvchi</th>
+        <th>Narx</th>
+        <th>Viloyat</th>
+        <th>Ko'rishlar</th>
+        <th>Holat</th>
+        <th>Amallar</th>
+      </tr>
+    </thead>
     <tbody>
     {% for item in items %}
     <tr>
-      <td style="color:#94a3b8">{{ item.id }}</td>
+      <td style="color:#475569;font-size:12px">{{ item.id }}</td>
       <td>
-        <a href="/listing/{{ item.id }}" style="color:var(--g);font-weight:600">{{ item.animal_emoji }} {{ item.title[:30] }}{% if item.title|length>30 %}...{% endif %}</a>
-        <div style="font-size:11px;color:#94a3b8">{{ item.created_at[:10] }}</div>
-      </td>
-      <td><a href="/user/{{ item.username }}" style="color:var(--g)">{{ item.username }}</a></td>
-      <td style="font-weight:700;color:#16a34a;white-space:nowrap">{{ item.price|fmt }} so'm</td>
-      <td>{{ item.region }}</td>
-      <td>{{ item.views }}</td>
-      <td>
-        {% if item.is_sold %}<span class="badge b-rd">Sotildi</span>
-        {% elif item.is_active %}<span class="badge b-gr">✅ Faol</span>
-        {% else %}<span class="badge b-yw">To'xtatilgan</span>{% endif %}
-        {% if item.is_premium %}<span class="badge" style="background:#fef3c7;color:#92400e">⭐</span>{% endif %}
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:24px">{{ item.animal_emoji }}</span>
+          <div>
+            <a href="/listing/{{ item.id }}" style="color:#22c55e;font-weight:600;font-size:13px" target="_blank">{{ item.title[:25] }}{% if item.title|length>25 %}...{% endif %}</a>
+            <div style="font-size:11px;color:#64748b">{{ item.animal_name }} • {{ item.age or '—' }}</div>
+          </div>
+        </div>
       </td>
       <td>
-        <div style="display:flex;gap:5px;align-items:center">
-          <form method="post" action="/admin/listings/{{ item.id }}/toggle" style="display:flex;gap:4px">
-            <button type="submit" class="btn btn-sm btn-o" style="padding:5px 9px;font-size:12px">
-              {% if item.is_active %}⏸{% else %}▶{% endif %}
-            </button>
-            <button type="submit" name="premium" value="1" class="btn btn-sm" style="padding:5px 9px;font-size:12px;background:#fef3c7;color:#92400e;border:1px solid #fde68a">⭐</button>
+        <a href="/user/{{ item.username }}" style="color:#94a3b8;font-size:13px" target="_blank">{{ item.username }}</a>
+        <div style="font-size:11px;color:#475569">{{ item.full_name or '' }}</div>
+      </td>
+      <td style="font-weight:700;color:#22c55e;white-space:nowrap;font-size:13px">{{ item.price|fmt }} so'm</td>
+      <td style="font-size:13px;color:#94a3b8">{{ item.region }}</td>
+      <td style="font-size:13px;color:#64748b">👁 {{ item.views or 0 }}</td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          {% if item.is_premium %}<span class="badge b-pr">⭐ Premium</span>{% endif %}
+          {% if item.is_sold %}<span class="badge b-rd">Sotildi</span>
+          {% elif item.is_active %}<span class="badge b-gr">Faol</span>
+          {% else %}<span class="badge b-yw">To'xtatilgan</span>{% endif %}
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <form method="post" action="/admin/listings/{{ item.id }}/premium" style="display:inline">
+            <button class="btn-adm {{ 'btn-adm-p' if not item.is_premium else 'btn-adm-o' }}" style="padding:5px 10px;font-size:11px" title="{{ 'Premium qilish' if not item.is_premium else 'Premiumni olish' }}">⭐</button>
           </form>
-          <form method="post" action="/admin/listings/{{ item.id }}/delete" style="display:inline" onsubmit="return confirm('O\'chirishni tasdiqlaysizmi?')">
-            <button type="submit" class="btn btn-d btn-sm" style="padding:5px 9px;font-size:12px">🗑</button>
+          <form method="post" action="/admin/listings/{{ item.id }}/toggle" style="display:inline">
+            <button class="btn-adm btn-adm-o" style="padding:5px 10px;font-size:11px" title="{{ 'To\'xtatish' if item.is_active else 'Faollashtirish' }}">{{ '⏸' if item.is_active else '▶️' }}</button>
+          </form>
+          <form method="post" action="/admin/listings/{{ item.id }}/delete" style="display:inline" onsubmit="return confirm('O\'chirish?')">
+            <button class="btn-adm btn-adm-d" style="padding:5px 10px;font-size:11px">🗑</button>
           </form>
         </div>
       </td>
