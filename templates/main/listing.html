@@ -10,39 +10,12 @@
   </div>
 
   <div class="ld-hero">
-    <!-- Image / Photo Gallery -->
-    <div class="ld-img" style="position:relative;overflow:hidden">
-      {% if item.photos %}
-        {% set photo_list = item.photos.split(',') %}
-        <div id="photoGallery" style="position:relative;width:100%;height:100%">
-          {% for photo in photo_list %}
-          <img src="/static/uploads/{{ photo }}" alt="photo" class="gallery-slide" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:{{ '1' if loop.first else '0' }};transition:opacity .3s"/>
-          {% endfor %}
-          {% if photo_list|length > 1 %}
-          <button onclick="changeSlide(-1)" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;z-index:2">&#8249;</button>
-          <button onclick="changeSlide(1)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;z-index:2">&#8250;</button>
-          <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2">
-            {% for photo in photo_list %}
-            <div class="dot" onclick="goSlide({{ loop.index0 }})" style="width:8px;height:8px;border-radius:50%;background:{{ 'rgba(255,255,255,1)' if loop.first else 'rgba(255,255,255,.5)' }};cursor:pointer;transition:.2s"></div>
-            {% endfor %}
-          </div>
-          {% endif %}
-        </div>
-      {% elif item.video %}
-        <video src="/static/uploads/{{ item.video }}" controls style="width:100%;height:100%;object-fit:cover"></video>
-      {% else %}
-        <div style="font-size:80px;display:flex;align-items:center;justify-content:center;height:100%">{{ item.animal_emoji }}</div>
-      {% endif %}
-      {% if item.is_premium %}<div style="position:absolute;top:14px;left:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:50px;z-index:3">⭐ Premium</div>{% endif %}
-      {% if item.is_sold %}<div style="position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;border-radius:var(--rd);z-index:3"><span style="background:#dc2626;color:#fff;font-size:18px;font-weight:800;padding:10px 24px;border-radius:12px">SOTILDI</span></div>{% endif %}
+    <!-- Image -->
+    <div class="ld-img" style="position:relative">
+      {{ item.animal_emoji }}
+      {% if item.is_premium %}<div style="position:absolute;top:14px;left:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:50px">⭐ Premium</div>{% endif %}
+      {% if item.is_sold %}<div style="position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;border-radius:var(--rd)"><span style="background:#dc2626;color:#fff;font-size:18px;font-weight:800;padding:10px 24px;border-radius:12px">SOTILDI</span></div>{% endif %}
     </div>
-    {% if item.photos and item.photos.split(',')|length > 1 %}
-    <div style="display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:4px">
-      {% for photo in item.photos.split(',') %}
-      <img src="/static/uploads/{{ photo }}" onclick="goSlide({{ loop.index0 }})" style="width:64px;height:64px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid var(--bdr);flex-shrink:0"/>
-      {% endfor %}
-    </div>
-    {% endif %}
 
     <!-- Info -->
     <div class="ld-info">
@@ -380,19 +353,5 @@ function openVetReview(id, name){
 function closeVetModal(){
   document.getElementById('vetReviewModal').style.display='none';
 }
-
-// Photo gallery
-let currentSlide = 0;
-const slides = document.querySelectorAll('.gallery-slide');
-const dots = document.querySelectorAll('.dot');
-function goSlide(n){
-  if(!slides.length) return;
-  slides[currentSlide].style.opacity='0';
-  if(dots[currentSlide]) dots[currentSlide].style.background='rgba(255,255,255,.5)';
-  currentSlide = (n + slides.length) % slides.length;
-  slides[currentSlide].style.opacity='1';
-  if(dots[currentSlide]) dots[currentSlide].style.background='rgba(255,255,255,1)';
-}
-function changeSlide(dir){ goSlide(currentSlide + dir); }
 </script>
 {% endblock %}

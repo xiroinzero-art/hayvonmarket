@@ -1,192 +1,43 @@
 {% extends 'main/base.html' %}{% block title %}Yangi e'lon{% endblock %}
 {% block content %}
 <div class="pw">
-<div class="cn" style="padding-top:24px;padding-bottom:90px;max-width:680px">
-
-  <div style="margin-bottom:20px" data-anim>
-    <h1 style="font-size:clamp(20px,5vw,28px);font-weight:800;margin-bottom:4px">➕ Yangi <span class="gt">e'lon</span></h1>
-    <p style="color:var(--mt);font-size:13px">Hayvonni tez va oson soting</p>
-  </div>
-
-  <form method="post" enctype="multipart/form-data" id="newListingForm">
-
-    <!-- Hayvon turi -->
-    <div class="sc afu" style="margin-bottom:14px;padding:18px">
-      <div style="font-size:12px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">1️⃣ Hayvon turi *</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="animalPicker">
-        {% for slug,emoji,name in animal_types %}
-        <label style="cursor:pointer">
-          <input type="radio" name="animal_slug" value="{{ slug }}" style="display:none" required>
-          <div class="apb" data-slug="{{ slug }}">
-            <div style="font-size:26px">{{ emoji }}</div>
-            <div style="font-size:10px;font-weight:600;margin-top:2px">{{ name }}</div>
-          </div>
-        </label>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- Asosiy -->
-    <div class="sc afu" style="margin-bottom:14px;padding:18px">
-      <div style="font-size:12px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">2️⃣ Asosiy ma'lumotlar</div>
-      <div class="fgroup"><label class="flabel">📝 Sarlavha *</label><input name="title" class="fctrl" placeholder="Masalan: Sut sigiri — Holstein zoti" required/></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="fgroup"><label class="flabel">💰 Narx (so'm) *</label><input name="price" type="number" class="fctrl" placeholder="12000000" required min="0"/></div>
-        <div class="fgroup"><label class="flabel">🔢 Soni</label><input name="count" type="number" value="1" min="1" class="fctrl"/></div>
-        <div class="fgroup"><label class="flabel">🕐 Yoshi</label><input name="age" class="fctrl" placeholder="3 yosh"/></div>
-        <div class="fgroup"><label class="flabel">♂️ Jinsi</label>
-          <select name="gender" class="fctrl"><option value="">Nomalum</option><option>Erkak</option><option>Urg'ochi</option><option>Aralash</option></select>
+<div class="cn" style="padding-top:32px;padding-bottom:60px;max-width:760px">
+  <h1 style="font-size:30px;font-weight:800;margin-bottom:6px" data-anim>➕ Yangi <span class="gt">e'lon</span> joylash</h1>
+  <p style="color:var(--mt);margin-bottom:28px" data-anim>2 daqiqada e'lon joylaing va xaridorlar bilan bog'laning</p>
+  <div class="sc afu">
+    <form method="post">
+      <div class="fgroup"><label class="flabel">📝 E'lon sarlavhasi *</label><input name="title" class="fctrl" placeholder="Masalan: Sut sigiri — Holstein zoti" required/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="fgroup"><label class="flabel">🐾 Hayvon turi *</label>
+          <select name="animal_slug" class="fctrl" required>
+            <option value="">Tanlang</option>
+            {% for slug,emoji,name in animal_types %}<option value="{{ slug }}">{{ emoji }} {{ name }}</option>{% endfor %}
+          </select>
         </div>
-        <div class="fgroup"><label class="flabel">🧬 Zoti</label><input name="breed" class="fctrl" placeholder="Holstein..."/></div>
-        <div class="fgroup"><label class="flabel">⚖️ Vazni</label><input name="weight" class="fctrl" placeholder="350 kg"/></div>
-      </div>
-    </div>
-
-    <!-- Joylashuv -->
-    <div class="sc afu" style="margin-bottom:14px;padding:18px">
-      <div style="font-size:12px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">3️⃣ Joylashuv</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fgroup"><label class="flabel">💰 Narx (so'm) *</label><input name="price" type="number" class="fctrl" placeholder="12000000" required/></div>
         <div class="fgroup"><label class="flabel">📍 Viloyat *</label>
           <select name="region" class="fctrl" required>
             <option value="">Tanlang</option>
             {% for r in regions %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
           </select>
         </div>
-        <div class="fgroup"><label class="flabel">🏘 Tuman</label><input name="district" class="fctrl" placeholder="Tuman"/></div>
-      </div>
-    </div>
-
-    <!-- Rasm va video -->
-    <div class="sc afu" style="margin-bottom:14px;padding:18px">
-      <div style="font-size:12px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">4️⃣ Rasm va video</div>
-
-      <!-- Photo upload -->
-      <div class="fgroup">
-        <label class="flabel">📸 Rasmlar (max 5 ta)</label>
-        <div id="photoDropzone" onclick="document.getElementById('photoInput').click()" style="border:2px dashed var(--bdr);border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;transition:.2s;background:var(--bg3)" onmouseover="this.style.borderColor='var(--g)'" onmouseout="this.style.borderColor='var(--bdr)'">
-          <div style="font-size:32px;margin-bottom:6px">📷</div>
-          <div style="font-weight:600;font-size:14px;color:var(--dk)">Rasmlarni tanlang</div>
-          <div style="font-size:12px;color:var(--mt);margin-top:4px">JPG, PNG, WEBP • Max 5 MB</div>
+        <div class="fgroup"><label class="flabel">🏘 Tuman</label><input name="district" class="fctrl" placeholder="Tuman nomi"/></div>
+        <div class="fgroup"><label class="flabel">🔢 Soni</label><input name="count" type="number" value="1" min="1" class="fctrl"/></div>
+        <div class="fgroup"><label class="flabel">🕐 Yoshi</label><input name="age" class="fctrl" placeholder="3 yosh, 2-4 yosh..."/></div>
+        <div class="fgroup"><label class="flabel">♂️ Jinsi</label>
+          <select name="gender" class="fctrl"><option value="">Nomalum</option><option>Erkak</option><option>Urg'ochi</option><option>Aralash</option></select>
         </div>
-        <input id="photoInput" type="file" name="photos" multiple accept="image/*" style="display:none" onchange="previewPhotos(this)"/>
-        <div id="photoPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
+        <div class="fgroup"><label class="flabel">🧬 Zoti</label><input name="breed" class="fctrl" placeholder="Holstein, Gissar..."/></div>
+        <div class="fgroup"><label class="flabel">⚖️ Vazni</label><input name="weight" class="fctrl" placeholder="350 kg"/></div>
       </div>
-
-      <!-- Video upload -->
-      <div class="fgroup" style="margin-bottom:0">
-        <label class="flabel">🎥 Video (ixtiyoriy)</label>
-        <div id="videoDropzone" onclick="document.getElementById('videoInput').click()" style="border:2px dashed var(--bdr);border-radius:14px;padding:20px 16px;text-align:center;cursor:pointer;transition:.2s;background:var(--bg3)" onmouseover="this.style.borderColor='var(--g)'" onmouseout="this.style.borderColor='var(--bdr)'">
-          <div style="font-size:28px;margin-bottom:4px">🎬</div>
-          <div style="font-weight:600;font-size:13px;color:var(--dk)">Video tanlang</div>
-          <div style="font-size:12px;color:var(--mt);margin-top:3px">MP4, MOV • Max 50 MB</div>
-        </div>
-        <input id="videoInput" type="file" name="video" accept="video/*" style="display:none" onchange="previewVideo(this)"/>
-        <div id="videoPreview" style="margin-top:10px"></div>
+      <div class="fgroup"><label class="flabel">📄 Tavsif</label><textarea name="description" class="fctrl" rows="4" placeholder="Hayvon haqida qo'shimcha ma'lumot..."></textarea></div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button type="submit" class="btn btn-p btn-lg">🚀 E'lonni joylash</button>
+        <a href="/my-listings" class="btn btn-o btn-lg">Bekor qilish</a>
       </div>
-    </div>
-
-    <!-- Tavsif -->
-    <div class="sc afu" style="margin-bottom:20px;padding:18px">
-      <div style="font-size:12px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">5️⃣ Tavsif</div>
-      <textarea name="description" class="fctrl" rows="4" placeholder="Hayvon haqida qo'shimcha ma'lumot: sog'lig'i, oziqlanishi, xususiyatlari..." style="margin-bottom:0"></textarea>
-    </div>
-
-    <!-- Submit -->
-    <div style="display:flex;gap:10px">
-      <button type="submit" class="btn btn-p btn-lg" style="flex:1" id="submitBtn">🚀 E'lonni joylash</button>
-      <a href="/my-listings" class="btn btn-o btn-lg">❌</a>
-    </div>
-
-  </form>
+    </form>
+  </div>
 </div>
 </div>
-
-<style>
-.apb{text-align:center;padding:10px 4px;border-radius:12px;border:2px solid var(--bdr);background:var(--bg3);transition:.15s;user-select:none}
-.apb:hover{border-color:var(--g);background:var(--gl)}
-.apb.selected{border-color:var(--g);background:var(--gl)}
-.photo-thumb{width:80px;height:80px;object-fit:cover;border-radius:10px;border:2px solid var(--bdr);position:relative}
-.photo-thumb-wrap{position:relative;display:inline-block}
-.photo-rm{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
-@media(max-width:480px){
-  #animalPicker{grid-template-columns:repeat(3,1fr)!important}
-  div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
-}
-</style>
-
-<script>
-// Animal picker
-document.querySelectorAll('#animalPicker label').forEach(label=>{
-  label.addEventListener('click',()=>{
-    document.querySelectorAll('.apb').forEach(b=>b.classList.remove('selected'));
-    label.querySelector('.apb').classList.add('selected');
-  });
-});
-
-// Photo preview
-let selectedFiles = [];
-function previewPhotos(input){
-  const files = Array.from(input.files).slice(0,5);
-  selectedFiles = files;
-  renderPreviews();
-}
-function renderPreviews(){
-  const preview = document.getElementById('photoPreview');
-  preview.innerHTML = '';
-  selectedFiles.forEach((file,i)=>{
-    const wrap = document.createElement('div');
-    wrap.className = 'photo-thumb-wrap';
-    const img = document.createElement('img');
-    img.className = 'photo-thumb';
-    img.src = URL.createObjectURL(file);
-    const rm = document.createElement('button');
-    rm.className = 'photo-rm';
-    rm.type = 'button';
-    rm.textContent = '×';
-    rm.onclick = ()=>{ selectedFiles.splice(i,1); renderPreviews(); };
-    wrap.appendChild(img);
-    wrap.appendChild(rm);
-    preview.appendChild(wrap);
-  });
-  if(selectedFiles.length>0){
-    document.getElementById('photoDropzone').style.padding='12px';
-  }
-}
-
-// Video preview
-function previewVideo(input){
-  const file = input.files[0];
-  if(!file) return;
-  const preview = document.getElementById('videoPreview');
-  const video = document.createElement('video');
-  video.src = URL.createObjectURL(file);
-  video.controls = true;
-  video.style.cssText = 'width:100%;border-radius:12px;max-height:200px;background:#000';
-  preview.innerHTML = '';
-  preview.appendChild(video);
-  const name = document.createElement('div');
-  name.style.cssText = 'font-size:12px;color:var(--mt);margin-top:4px';
-  name.textContent = '🎬 ' + file.name;
-  preview.appendChild(name);
-}
-
-// Submit with loading
-document.getElementById('newListingForm').addEventListener('submit',function(){
-  const btn = document.getElementById('submitBtn');
-  btn.textContent = '⏳ Yuklanmoqda...';
-  btn.disabled = true;
-});
-
-// Drag and drop for photos
-const dropzone = document.getElementById('photoDropzone');
-dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.style.borderColor='var(--g)'});
-dropzone.addEventListener('dragleave',()=>dropzone.style.borderColor='var(--bdr)');
-dropzone.addEventListener('drop',e=>{
-  e.preventDefault();
-  dropzone.style.borderColor='var(--bdr)';
-  const files = Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')).slice(0,5);
-  selectedFiles = files;
-  renderPreviews();
-});
-</script>
+<style>@media(max-width:600px){form > div[style*="grid"]{grid-template-columns:1fr!important}}</style>
 {% endblock %}
