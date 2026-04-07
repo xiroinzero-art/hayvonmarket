@@ -474,3 +474,95 @@ select.fctrl{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 @media(max-width:1100px){.g4{grid-template-columns:repeat(3,1fr)}.ft-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}.hero-inner{grid-template-columns:1fr}.hero-vis{display:none}.fw{grid-template-columns:1fr}.ft-grid{grid-template-columns:1fr 1fr;gap:20px}}
 @media(max-width:600px){.g4,.g3{grid-template-columns:1fr}.ft-grid{grid-template-columns:1fr}.hero-btns{flex-direction:column}.auth-box{padding:26px 18px}.role-opts{gap:6px}.rm-my-grid{flex-direction:column;align-items:center}.sec{padding:44px 18px}.cn{padding:0 18px}.nv-srch{display:none}}
+
+/* ══ BOTTOM NAV (mobile) ═════════════════════════════ */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;background:var(--modal-bg);backdrop-filter:blur(20px);border-top:1px solid var(--bdr);padding:6px 0 calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.08)}
+.bottom-nav-inner{display:flex;align-items:center;justify-content:space-around}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;border-radius:12px;color:var(--mt);text-decoration:none;font-size:10px;font-weight:600;transition:.2s;min-width:56px;position:relative}
+.bn-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bn-item.active,.bn-item:hover{color:var(--g)}
+.bn-item.add-btn{background:var(--g);color:#fff;border-radius:16px;padding:8px 16px;margin-bottom:4px}
+.bn-item.add-btn:hover{background:var(--gd);color:#fff}
+@media(max-width:768px){
+  .bottom-nav{display:block}
+  body{padding-bottom:74px}
+  .footer{padding-bottom:20px}
+  .navbar{padding:0 12px}
+  .nv-logo{font-size:16px}
+  .nv-logo img{width:28px;height:28px}
+  .sec{padding:28px 14px}
+  .cn{padding:0 14px}
+  .card-wrap{border-radius:14px}
+  .card-price{font-size:18px}
+  .card-tit{font-size:14px}
+  .hero-tit{font-size:clamp(26px,8vw,40px)}
+  .auth-box{margin:10px;padding:24px 16px;border-radius:18px}
+  .g4{grid-template-columns:repeat(2,1fr);gap:10px}
+  .g3{grid-template-columns:repeat(2,1fr);gap:10px}
+}
+@media(max-width:400px){
+  .g4,.g3{grid-template-columns:1fr}
+  .bn-item{min-width:44px;padding:6px 8px;font-size:9px}
+}
+
+/* ══ MOBILE IMPROVEMENTS ════════════════════════════ */
+@media(max-width:768px){
+  /* Hero section compact */
+  .hero{padding:20px 14px 24px}
+  .hero-badge{font-size:11px;padding:5px 12px;margin-bottom:10px}
+  .hero-h1{font-size:clamp(24px,7vw,36px);margin-bottom:10px}
+  .hero-sub{font-size:13px;margin-bottom:14px}
+  .hero-btns{gap:8px}
+  .hero-btns .btn{padding:12px 18px;font-size:14px}
+  
+  /* Sections compact */
+  .sec-tit{font-size:20px}
+  .sec-sub{font-size:13px}
+  
+  /* Cards 2 columns on mobile */
+  .g4{grid-template-columns:repeat(2,1fr)!important;gap:8px}
+  .card-wrap{border-radius:12px}
+  .card-img{height:130px}
+  .card-body{padding:10px}
+  .card-tit{font-size:13px;margin-bottom:4px}
+  .card-price{font-size:16px}
+  .card-meta{font-size:11px}
+  .card-footer{padding:8px 10px}
+  
+  /* Navbar compact */
+  .navbar{height:56px;padding:0 12px}
+  .nv-logo span{font-size:15px}
+  .nv-right{gap:6px}
+  
+  /* Bottom nav bigger touch targets */
+  .bn-item{min-width:52px;padding:7px 6px;font-size:10px;gap:2px}
+  .bn-item svg{width:20px;height:20px}
+  .bn-item.add-btn{padding:9px 14px;border-radius:14px}
+  
+  /* Auth pages */
+  .auth-wrap{padding:10px}
+  .auth-box{margin:0;border-radius:16px}
+  
+  /* Hide footer on mobile (bottom nav replaces it) */
+  .footer{display:none}
+  
+  /* Stats row compact */
+  .intro-counters{gap:12px}
+  .intro-counters .ic-item{font-size:13px}
+  
+  /* Listing page */
+  .lst-grid{grid-template-columns:1fr}
+  
+  /* Catalog filters scrollable */
+  .filter-row{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  .filter-row::-webkit-scrollbar{display:none}
+}
+
+@media(max-width:400px){
+  .g4{grid-template-columns:repeat(2,1fr)!important;gap:6px}
+  .card-img{height:110px}
+  .card-body{padding:8px}
+  .card-tit{font-size:12px}
+  .card-price{font-size:14px}
+  .hero-h1{font-size:22px}
+}

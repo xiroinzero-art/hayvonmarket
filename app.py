@@ -144,6 +144,26 @@ def init_db():
         db.commit()
     except:
         pass
+    try:
+        db.execute("ALTER TABLE users ADD COLUMN is_banned INTEGER DEFAULT 0")
+        db.commit()
+    except:
+        pass
+    try:
+        db.execute("ALTER TABLE listings ADD COLUMN is_premium INTEGER DEFAULT 0")
+        db.commit()
+    except:
+        pass
+    try:
+        db.execute("ALTER TABLE listings ADD COLUMN photos TEXT DEFAULT ''")
+        db.commit()
+    except:
+        pass
+    try:
+        db.execute("ALTER TABLE listings ADD COLUMN video TEXT DEFAULT ''")
+        db.commit()
+    except:
+        pass
     if db.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0:
         _seed(db)
     db.commit()
@@ -415,6 +435,22 @@ def vet_review():
     return redirect(request.referrer or '/catalog')
 
 # ─── NEW LISTING ────────────────────────────────────────────────
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
+ALLOWED_IMG = {'png','jpg','jpeg','webp','gif'}
+ALLOWED_VID = {'mp4','mov','avi','webm'}
+
+def save_files(files, folder, allowed):
+    saved = []
+    os.makedirs(folder, exist_ok=True)
+    for f in files:
+        if f and f.filename:
+            ext = f.filename.rsplit('.',1)[-1].lower()
+            if ext in allowed:
+                fname = secrets.token_hex(8) + '.' + ext
+                f.save(os.path.join(folder, fname))
+                saved.append(fname)
+    return saved
+
 @app.route('/listing/new', methods=['GET','POST'])
 @login_required
 def new_listing():
@@ -426,24 +462,31 @@ def new_listing():
         region= request.form.get('region','')
         if not all([title,aslug,price,region]):
             flash("Barcha majburiy maydonlarni to'ldiring",'error')
-            return render_template('main/new_listing.html')
+            return render_template('main/new_listing.html', animal_types=ANIMAL_TYPES, regions=REGIONS)
         em = {s:e for s,e,_ in ANIMAL_TYPES}.get(aslug,'🐾')
         an = {s:n for s,_,n in ANIMAL_TYPES}.get(aslug,'')
+        # Handle photos
+        photos = save_files(request.files.getlist('photos'), UPLOAD_FOLDER, ALLOWED_IMG)
+        photos_str = ','.join(photos)
+        # Handle video
+        videos = save_files(request.files.getlist('video'), UPLOAD_FOLDER, ALLOWED_VID)
+        video_str = videos[0] if videos else ''
         db.execute("""INSERT INTO listings
             (user_id,title,animal_slug,animal_emoji,animal_name,price,region,
-             district,age,gender,breed,count,weight,description)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", (
+             district,age,gender,breed,count,weight,description,photos,video)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", (
             session['uid'],title,aslug,em,an,price,region,
             request.form.get('district',''), request.form.get('age',''),
             request.form.get('gender',''), request.form.get('breed',''),
             int(request.form.get('count',1) or 1),
             request.form.get('weight',''), request.form.get('description','').strip(),
+            photos_str, video_str,
         ))
         db.commit()
         lid = db.execute("SELECT last_insert_rowid()").fetchone()[0]
         flash("E'lon muvaffaqiyatli joylandi! 🎉",'success')
         return redirect(url_for('listing',lid=lid))
-    return render_template('main/new_listing.html')
+    return render_template('main/new_listing.html', animal_types=ANIMAL_TYPES, regions=REGIONS)
 
 @app.route('/listing/<int:lid>/edit', methods=['GET','POST'])
 @login_required
@@ -645,6 +688,9 @@ def login():
         user  = get_db().execute("SELECT * FROM users WHERE username=? AND password=?",
                                  (uname,hp(pwd))).fetchone()
         if user:
+            if user['is_banned']:
+                flash("Sizning hisobingiz bloklangan. Admin bilan bog'laning.",'error')
+                return render_template('main/login.html')
             session['uid'] = user['id']
             session.permanent = True
             flash(f"Xush kelibsiz, {user['full_name'] or user['username']}! 👋",'success')
@@ -802,8 +848,12 @@ def admin_index():
 @login_required
 @admin_required
 def admin_users():
-    users = get_db().execute("SELECT * FROM users ORDER BY created_at DESC").fetchall()
-    return render_template('admin/users.html', users=users)
+    q = request.args.get("q","")
+    if q:
+        users = get_db().execute("SELECT * FROM users WHERE username LIKE ? OR full_name LIKE ? ORDER BY created_at DESC",("%"+q+"%","%"+q+"%")).fetchall()
+    else:
+        users = get_db().execute("SELECT * FROM users ORDER BY created_at DESC").fetchall()
+    return render_template("admin/users.html", users=users, q=q)
 
 @app.route('/admin/users/<int:uid>/verify', methods=['POST'])
 @login_required
@@ -853,6 +903,57 @@ def admin_toggle_listing(lid):
                     1 if request.form.get('premium') else item['is_premium'], lid))
         db.commit()
     return redirect(url_for('admin_listings'))
+
+@app.route('/admin/users/<int:uid>/ban', methods=['POST'])
+@login_required
+@admin_required
+def admin_ban(uid):
+    if uid == session['uid']:
+        flash("O'zingizni ban qila olmaysiz",'error')
+        return redirect(url_for('admin_users'))
+    db = get_db()
+    u = db.execute("SELECT * FROM users WHERE id=?",(uid,)).fetchone()
+    if u:
+        db.execute("UPDATE users SET is_banned=? WHERE id=?",(0 if u['is_banned'] else 1, uid))
+        db.commit()
+        flash(f"{'Foydalanuvchi ban qilindi' if not u['is_banned'] else 'Ban olindi'}",'info')
+    return redirect(url_for('admin_users'))
+
+@app.route('/admin/users/<int:uid>/make-admin', methods=['POST'])
+@login_required
+@admin_required
+def admin_make_admin(uid):
+    db = get_db()
+    u = db.execute("SELECT * FROM users WHERE id=?",(uid,)).fetchone()
+    if u:
+        db.execute("UPDATE users SET is_admin=? WHERE id=?",(0 if u['is_admin'] else 1, uid))
+        db.commit()
+    return redirect(url_for('admin_users'))
+
+@app.route('/admin/listings/<int:lid>/premium', methods=['POST'])
+@login_required
+@admin_required
+def admin_premium(lid):
+    db = get_db()
+    item = db.execute("SELECT * FROM listings WHERE id=?",(lid,)).fetchone()
+    if item:
+        db.execute("UPDATE listings SET is_premium=? WHERE id=?",(0 if item['is_premium'] else 1, lid))
+        db.commit()
+    return redirect(url_for('admin_listings'))
+
+@app.route('/admin/stats-api')
+@login_required
+@admin_required
+def admin_stats_api():
+    db = get_db()
+    return jsonify({
+        'users': db.execute("SELECT COUNT(*) FROM users WHERE is_admin=0").fetchone()[0],
+        'listings': db.execute("SELECT COUNT(*) FROM listings").fetchone()[0],
+        'active': db.execute("SELECT COUNT(*) FROM listings WHERE is_active=1").fetchone()[0],
+        'sold': db.execute("SELECT COUNT(*) FROM listings WHERE is_sold=1").fetchone()[0],
+        'msgs': db.execute("SELECT COUNT(*) FROM messages").fetchone()[0],
+        'banned': db.execute("SELECT COUNT(*) FROM users WHERE is_banned=1").fetchone()[0],
+    })
 
 @app.route('/admin/listings/<int:lid>/delete', methods=['POST'])
 @login_required
