@@ -223,8 +223,8 @@ textarea.fctrl{resize:vertical;min-height:100px}
 .auth-divider span{font-size:12px;color:var(--mt);white-space:nowrap}
 
 /* ── LISTING PAGE ────────────────────────────────────── */
-.ld-wrap{max-width:1280px;margin:0 auto;padding:32px 24px 80px;display:grid;grid-template-columns:1fr 380px;gap:28px}
-.ld-img{height:460px;border-radius:var(--rd);overflow:hidden;background:var(--bg3);position:relative}
+.ld-wrap{max-width:1280px;margin:0 auto;padding:24px 24px 80px;display:grid;grid-template-columns:1fr 360px;gap:24px}
+.ld-img{height:320px;border-radius:var(--rd);overflow:hidden;background:var(--bg3);position:relative}
 .ld-tit{font-size:clamp(22px,3vw,32px);font-weight:800;color:var(--dk);margin-bottom:10px;line-height:1.2}
 .ld-price{font-size:clamp(26px,3.5vw,40px);font-weight:900;color:var(--g);margin-bottom:20px}
 .ld-attrs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
@@ -344,4 +344,14 @@ textarea.fctrl{resize:vertical;min-height:100px}
   .card-body{padding:8px}
   .card-price{font-size:14px}
   .card-tit{font-size:12px}
+}
+
+/* Listing page image fix */
+@media(max-width:768px){
+  .ld-img{height:220px!important}
+  .ld-wrap{padding:14px 14px 80px!important;gap:16px}
+  .ld-attrs{grid-template-columns:repeat(2,1fr)!important}
+}
+@media(max-width:480px){
+  .ld-img{height:180px!important}
 }
