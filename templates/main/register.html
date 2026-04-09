@@ -1,29 +1,61 @@
 {% extends 'main/base.html' %}{% block title %}Ro'yxatdan o'tish{% endblock %}
 {% block content %}
-<div class="auth-wrap">
-  <div class="auth-box afu" style="max-width:540px">
-    <div class="auth-emoji abng">🌱</div>
+<div class="auth-wrap" style="padding:20px">
+  <div class="auth-box afu" style="max-width:480px">
+    <img src="/static/logo.png" alt="Logo" class="auth-logo"/>
     <h1 class="auth-tit" data-i18n="reg_title">Ro'yxatdan o'tish</h1>
     <p class="auth-sub" data-i18n="reg_sub">Bepul hisob oching va savdoni boshlang!</p>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat,msg in msgs %}
+    <div class="flash-msg flash-{{ 'success' if cat=='success' else 'error' if cat=='error' else 'info' }}">
+      {{ '✅' if cat=='success' else '❌' if cat=='error' else 'ℹ️' }} {{ msg }}
+    </div>
+    {% endfor %}{% endwith %}
+
+    <!-- Google -->
+    <a href="/auth/google" class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Google orqali ro'yxatdan o'tish
+    </a>
+
+    <div class="auth-divider"><span>yoki</span></div>
+
     <form method="post" id="regForm" autocomplete="on">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-        <div class="fgroup">
-          <label class="flabel" data-i18n="uname_l">👤 Login *</label>
-          <input name="username" class="fctrl" id="regUser" placeholder="login123" required autocomplete="username"
-            oninput="validateUser(this)"/>
-          <p class="fhint">Faqat lotin harflari va raqamlar</p>
-          <p class="ferr" id="userErr" style="display:none;color:#ef4444;font-size:12px;margin-top:4px"></p>
-        </div>
-        <div class="fgroup">
-          <label class="flabel" data-i18n="fn_l">🙍 To'liq ism *</label>
-          <input name="full_name" class="fctrl" placeholder="Ismingiz Familiyangiz" required autocomplete="name"/>
+      <!-- Role -->
+      <div class="fgroup">
+        <label class="flabel">👤 Siz kim sifatida ro'yxatdan o'tasiz?</label>
+        <div class="role-opts">
+          <label class="role-opt" id="roleXaridor">
+            <input type="radio" name="role" value="buyer" required>
+            <div class="ri">🛒</div>
+            <div class="rl">Xaridor</div>
+          </label>
+          <label class="role-opt" id="roleSotuvchi">
+            <input type="radio" name="role" value="seller">
+            <div class="ri">🏪</div>
+            <div class="rl">Sotuvchi</div>
+          </label>
+          <label class="role-opt" id="roleVeterinar">
+            <input type="radio" name="role" value="vet">
+            <div class="ri">🩺</div>
+            <div class="rl">Veterinar</div>
+          </label>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="fgroup" style="grid-column:1/-1">
+          <label class="flabel" data-i18n="uname_l">👤 Login *</label>
+          <input name="username" class="fctrl" placeholder="faqat lotin harflari" required autocomplete="username" pattern="[a-zA-Z0-9_]{3,}" title="Kamida 3 belgi, faqat lotin harflari"/>
+        </div>
+        <div class="fgroup" style="grid-column:1/-1">
+          <label class="flabel" data-i18n="fn_l">🙍 To'liq ism *</label>
+          <input name="full_name" class="fctrl" placeholder="Ism Familiya" required autocomplete="name"/>
+        </div>
         <div class="fgroup">
           <label class="flabel" data-i18n="ph_l">📞 Telefon *</label>
-          <input name="phone" class="fctrl" placeholder="+998 90 000 00 00" required autocomplete="tel"
-            oninput="this.value=this.value.replace(/[^+\d\s]/g,'')"/>
+          <input name="phone" class="fctrl" placeholder="+998 90 000 00 00" required autocomplete="tel"/>
         </div>
         <div class="fgroup">
           <label class="flabel" data-i18n="reg_l">📍 Viloyat *</label>
@@ -32,97 +64,50 @@
             {% for r in regions %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
           </select>
         </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
         <div class="fgroup">
           <label class="flabel" data-i18n="pass_l">🔒 Parol *</label>
           <div style="position:relative">
-            <input name="password" id="regPwd" type="password" class="fctrl" placeholder="Kamida 6 ta belgi"
-              required autocomplete="new-password" oninput="checkPwdStrength(this)" style="padding-right:48px"/>
-            <button type="button" class="eye-btn" onclick="togglePwd2('regPwd',this)">👁</button>
+            <input name="password" id="regPass" type="password" class="fctrl" placeholder="kamida 6 belgi" required minlength="6" style="padding-right:44px" autocomplete="new-password"/>
+            <button type="button" class="eye-btn" onclick="togglePwd('regPass',this)">👁</button>
           </div>
-          <div class="pwd-strength" id="pwdBar"><div id="pwdFill"></div></div>
-          <p class="fhint" id="pwdHint">Kamida 6 ta belgi</p>
         </div>
         <div class="fgroup">
           <label class="flabel" data-i18n="conf_pass">🔒 Parolni takrorlang *</label>
           <div style="position:relative">
-            <input name="password2" id="regPwd2" type="password" class="fctrl" placeholder="Parolni qaytaring"
-              required autocomplete="new-password" oninput="checkMatch()" style="padding-right:48px"/>
-            <button type="button" class="eye-btn" onclick="togglePwd2('regPwd2',this)">👁</button>
+            <input name="password2" id="regPass2" type="password" class="fctrl" placeholder="••••••••" required style="padding-right:44px" autocomplete="new-password"/>
+            <button type="button" class="eye-btn" onclick="togglePwd('regPass2',this)">👁</button>
           </div>
-          <p class="ferr" id="matchErr" style="display:none;color:#ef4444;font-size:12px;margin-top:4px">Parollar mos emas</p>
+          <div id="passMismatch" style="display:none;color:#dc2626;font-size:12px;margin-top:4px">⚠️ Parollar mos emas</div>
         </div>
       </div>
-      <div class="reg-role-sel">
-        <p style="font-weight:600;margin-bottom:8px">👤 Siz kim sifatida ro'yxatdan o'tmoqchisiz?</p>
-        <div class="role-opts">
-          <label class="role-opt">
-            <input type="radio" name="role" value="buyer" checked/>
-            <span class="role-icon">🛒</span>
-            <span class="role-lbl">Xaridor</span>
-          </label>
-          <label class="role-opt">
-            <input type="radio" name="role" value="seller"/>
-            <span class="role-icon">🏪</span>
-            <span class="role-lbl">Sotuvchi</span>
-          </label>
-          <label class="role-opt">
-            <input type="radio" name="role" value="vet"/>
-            <span class="role-icon">🩺</span>
-            <span class="role-lbl">Veterinar</span>
-          </label>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-p" style="width:100%;padding:14px;font-size:16px;margin-top:4px" data-i18n="reg_btn">Ro'yxatdan o'tish →</button>
+
+      <button type="submit" class="btn btn-p" style="width:100%;padding:13px;font-size:15px;justify-content:center;margin-top:4px" data-i18n="reg_btn">Ro'yxatdan o'tish →</button>
     </form>
-    <div style="display:flex;align-items:center;gap:12px;margin:20px 0">
-      <div style="flex:1;height:1px;background:var(--color-border-tertiary)"></div>
-      <span style="font-size:13px;color:var(--mt)">yoki</span>
-      <div style="flex:1;height:1px;background:var(--color-border-tertiary)"></div>
-    </div>
-    <a href="/auth/google" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border:1px solid var(--color-border-tertiary);border-radius:10px;background:var(--color-background-primary);color:var(--color-text-primary);text-decoration:none;font-size:15px;font-weight:500;transition:background 0.2s" onmouseover="this.style.background='var(--color-background-secondary)'" onmouseout="this.style.background='var(--color-background-primary)'">
-      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-      Google orqali ro'yxatdan o'tish
-    </a>
-    <p style="text-align:center;font-size:14px;color:var(--mt);margin-top:18px">
+
+    <p style="text-align:center;font-size:14px;color:var(--mt);margin-top:16px">
       <span data-i18n="have_acc">Hisobingiz bormi?</span>
-      <a href="/login" style="color:var(--g);font-weight:700" data-i18n="login">Kirish</a>
+      <a href="/login" style="color:var(--g);font-weight:800" data-i18n="login">Kirish</a>
     </p>
   </div>
 </div>
 <script>
-function togglePwd2(id,btn){
+function togglePwd(id,btn){
   const inp=document.getElementById(id);
   inp.type=inp.type==='password'?'text':'password';
-  btn.textContent=inp.type==='text'?'🙈':'👁';
+  btn.textContent=inp.type==='password'?'👁':'🙈';
 }
-function checkPwdStrength(inp){
-  const v=inp.value, fill=document.getElementById('pwdFill'),hint=document.getElementById('pwdHint');
-  let s=0;
-  if(v.length>=6)s++;if(v.length>=10)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^a-zA-Z0-9]/.test(v))s++;
-  const cols=['#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
-  const labels=['Juda zaif','Zaif','O\'rtacha','Kuchli','Juda kuchli'];
-  fill.style.width=(s/5*100)+'%';fill.style.background=cols[s-1]||cols[0];
-  hint.textContent=v.length?labels[s-1]||'Kamida 6 ta belgi':'Kamida 6 ta belgi';
-}
-function checkMatch(){
-  const p=document.getElementById('regPwd').value,p2=document.getElementById('regPwd2').value;
-  const err=document.getElementById('matchErr');
-  err.style.display=(p2&&p!==p2)?'block':'none';
-}
-function validateUser(inp){
-  const err=document.getElementById('userErr');
-  const v=inp.value;
-  if(v&&!/^[a-zA-Z0-9_]+$/.test(v)){
-    err.textContent='Faqat lotin harflari, raqamlar va _';err.style.display='block';
-  } else err.style.display='none';
-}
-document.getElementById('regForm').addEventListener('submit',function(e){
-  const p=document.getElementById('regPwd').value,p2=document.getElementById('regPwd2').value;
-  if(p!==p2){e.preventDefault();document.getElementById('matchErr').style.display='block';return;}
-  const u=document.getElementById('regUser').value;
-  if(!/^[a-zA-Z0-9_]+$/.test(u)){e.preventDefault();document.getElementById('userErr').textContent='Noto\'g\'ri login format';document.getElementById('userErr').style.display='block';}
+// Role selector
+document.querySelectorAll('.role-opt input').forEach(inp=>{
+  inp.addEventListener('change',()=>{
+    document.querySelectorAll('.role-opt').forEach(o=>o.classList.remove('selected'));
+    inp.closest('.role-opt').classList.add('selected');
+  });
+});
+// Password match check
+document.getElementById('regPass2').addEventListener('input',function(){
+  const match=this.value===document.getElementById('regPass').value;
+  document.getElementById('passMismatch').style.display=this.value&&!match?'block':'none';
+  this.style.borderColor=this.value&&!match?'#dc2626':'';
 });
 </script>
 {% endblock %}

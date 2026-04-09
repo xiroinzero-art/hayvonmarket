@@ -2,52 +2,53 @@
 {% block content %}
 <div class="auth-wrap">
   <div class="auth-box afu">
-    <div class="auth-emoji abng">🐄</div>
+    <img src="/static/logo.png" alt="Logo" class="auth-logo"/>
     <h1 class="auth-tit" data-i18n="login_title">Tizimga kirish</h1>
-    <p class="auth-sub" data-i18n="login_sub">HayvonMarket'ga xush kelibsiz!</p>
-    <form method="post" id="loginForm" autocomplete="on">
+    <p class="auth-sub" data-i18n="login_sub">AnimalsMarket'ga xush kelibsiz!</p>
+
+    <!-- Flash messages -->
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat,msg in msgs %}
+    <div class="flash-msg flash-{{ 'success' if cat=='success' else 'error' if cat=='error' else 'info' }}">
+      {{ '✅' if cat=='success' else '❌' if cat=='error' else 'ℹ️' }} {{ msg }}
+    </div>
+    {% endfor %}{% endwith %}
+
+    <!-- Google login -->
+    <a href="/auth/google" class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Google orqali kirish
+    </a>
+
+    <div class="auth-divider"><span>yoki</span></div>
+
+    <form method="post" autocomplete="on">
       <div class="fgroup">
         <label class="flabel" data-i18n="uname_l">👤 Login</label>
-        <input name="username" id="loginUser" class="fctrl" placeholder="Loginингизни киринг" required autofocus autocomplete="username"/>
+        <input name="username" class="fctrl" placeholder="Loginингизни киринг" required autofocus autocomplete="username"/>
       </div>
       <div class="fgroup">
         <label class="flabel" data-i18n="pass_l">🔒 Parol</label>
         <div style="position:relative">
-          <input name="password" id="loginPass" type="password" class="fctrl" placeholder="••••••••" required autocomplete="current-password" style="padding-right:48px"/>
+          <input name="password" id="loginPass" type="password" class="fctrl" placeholder="••••••••" required autocomplete="current-password" style="padding-right:44px"/>
           <button type="button" class="eye-btn" onclick="togglePwd('loginPass',this)">👁</button>
         </div>
       </div>
-      <button type="submit" class="btn btn-p" style="width:100%;margin-top:8px;padding:14px;font-size:16px" data-i18n="login_btn">Kirish →</button>
+      <button type="submit" class="btn btn-p" style="width:100%;padding:13px;font-size:15px;justify-content:center" data-i18n="login_btn">Kirish →</button>
     </form>
-    <div style="display:flex;align-items:center;gap:12px;margin:20px 0">
-      <div style="flex:1;height:1px;background:var(--color-border-tertiary)"></div>
-      <span style="font-size:13px;color:var(--mt)">yoki</span>
-      <div style="flex:1;height:1px;background:var(--color-border-tertiary)"></div>
-    </div>
-    <a href="/auth/google" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border:1px solid var(--color-border-tertiary);border-radius:10px;background:var(--color-background-primary);color:var(--color-text-primary);text-decoration:none;font-size:15px;font-weight:500;transition:background 0.2s" onmouseover="this.style.background='var(--color-background-secondary)'" onmouseout="this.style.background='var(--color-background-primary)'">
-      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-      Google orqali kirish
-    </a>
-    <p style="text-align:center;font-size:14px;color:var(--mt);margin-top:20px">
+
+    <p style="text-align:center;font-size:14px;color:var(--mt);margin-top:18px">
       <span data-i18n="no_acc">Hisobingiz yo'qmi?</span>
-      <a href="/register" style="color:var(--g);font-weight:700" data-i18n="reg_link">Ro'yxatdan o'ting</a>
+      <a href="/register" style="color:var(--g);font-weight:800" data-i18n="reg_link">Ro'yxatdan o'ting</a>
     </p>
-    <div class="auth-demo">
-      🔑 Demo: <b>sardor</b> / <b>demo123</b> &nbsp;|&nbsp; Admin: <b>admin</b> / <b>admin123</b>
-    </div>
+    <div class="auth-demo">🔑 Demo: <b>sardor</b> / <b>demo123</b> &nbsp;|&nbsp; Admin: <b>admin</b> / <b>admin123</b></div>
   </div>
 </div>
 <script>
 function togglePwd(id,btn){
   const inp=document.getElementById(id);
-  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
-  else{inp.type='password';btn.textContent='👁';}
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'👁':'🙈';
 }
-// Apply lang to auth page labels
-(function(){
-  const T=window.T||{};const CL=localStorage.getItem('hm_lang')||'uz';
-  const t=T[CL]||T.uz||{};
-  ['loginUser'].forEach(id=>{const el=document.getElementById(id);if(el&&t.uname_l)el.placeholder=t.uname_l.replace(/[👤🔒]/g,'').trim();});
-})();
 </script>
 {% endblock %}

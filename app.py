@@ -831,11 +831,19 @@ def register():
 def api_search():
     q = request.args.get('q','').strip()
     if len(q)<2: return jsonify([])
-    r = get_db().execute("""SELECT id,title,animal_emoji,price,region FROM listings
-        WHERE (title LIKE ? OR breed LIKE ?) AND is_active=1 AND is_sold=0 LIMIT 6""",
-        (f'%{q}%',f'%{q}%')).fetchall()
-    return jsonify([dict(id=x['id'],title=x['title'],emoji=x['animal_emoji'],
-                         price=x['price'],region=x['region']) for x in r])
+    r = get_db().execute("""SELECT id,title,animal_emoji,animal_slug,price,region,photos FROM listings
+        WHERE (title LIKE ? OR breed LIKE ? OR animal_name LIKE ?) AND is_active=1 AND is_sold=0 LIMIT 6""",
+        (f'%{q}%',f'%{q}%',f'%{q}%')).fetchall()
+    results = []
+    for x in r:
+        photos = (x['photos'] or '').split(',')
+        img = f"/static/uploads/{photos[0]}" if photos[0] else ANIMAL_IMAGES.get(x['animal_slug'], '')
+        results.append(dict(
+            id=x['id'], title=x['title'], emoji=x['animal_emoji'],
+            price=f"{int(x['price']):,}".replace(',',' ') + " so'm",
+            region=x['region'], img=img
+        ))
+    return jsonify(results)
 
 # ─── ABOUT / CONTACT ──────────────────────────────────────────────
 @app.route('/about')
