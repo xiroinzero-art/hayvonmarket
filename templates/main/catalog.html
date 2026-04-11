@@ -12,41 +12,45 @@
   <!-- Filters -->
   <div class="filter-bar" data-anim>
     <form method="get" action="/catalog">
-      <div class="frow" style="margin-bottom:12px">
-        <input name="q" value="{{ q }}" class="finput" placeholder="🔍 Qidirish..." data-i18n-ph="search_ph" style="flex:1;min-width:180px"/>
-        <select name="type" class="finput">
-          <option value="" data-i18n="all_types">Barcha turlar</option>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+        <input name="q" value="{{ q }}" class="filter-input" placeholder="🔍 Hayvon qidirish..." data-i18n-ph="search_ph" style="flex:1;min-width:160px"/>
+        <select name="type" class="filter-select" data-i18n="all_types">
+          <option value="">Barcha turlar</option>
           {% for slug,emoji,name in animal_types %}
           <option value="{{ slug }}" {% if atype==slug %}selected{% endif %}>{{ emoji }} {{ name }}</option>
           {% endfor %}
         </select>
-        <select name="region" class="finput">
-          <option value="" data-i18n="all_regions">Barcha viloyatlar</option>
+        <select name="region" class="filter-select">
+          <option value="">Barcha viloyatlar</option>
           {% for r in regions %}
           <option value="{{ r }}" {% if reg==r %}selected{% endif %}>📍 {{ r }}</option>
           {% endfor %}
         </select>
-        <input name="min" value="{{ minp }}" class="finput" data-i18n-ph="min_price" placeholder="Min narx" type="number" style="width:110px"/>
-        <input name="max" value="{{ maxp }}" class="finput" data-i18n-ph="max_price" placeholder="Max narx" type="number" style="width:110px"/>
-        <button type="submit" class="btn btn-p" data-i18n="search_btn">🔍 Qidirish</button>
-        <a href="/catalog" class="btn btn-o" data-i18n="clear_btn">✕ Tozalash</a>
+        <input name="min" value="{{ minp }}" class="filter-input" data-i18n-ph="min_price" placeholder="Min narx" type="number" style="width:100px"/>
+        <input name="max" value="{{ maxp }}" class="filter-input" data-i18n-ph="max_price" placeholder="Max narx" type="number" style="width:100px"/>
+        <button type="submit" class="btn btn-p" style="padding:9px 18px" data-i18n="search_btn">🔍 Qidirish</button>
+        {% if q or atype or reg or minp or maxp %}
+        <a href="/catalog" class="btn btn-o" style="padding:9px 14px" data-i18n="clear_btn">✕ Tozalash</a>
+        {% endif %}
       </div>
-      <div class="frow">
-        <span style="font-size:13px;color:var(--mt);font-weight:600" data-i18n="sort_label">Saralash:</span>
-        {% for val,key in [('new','sort_new'),('price_asc','sort_cheap'),('price_desc','sort_exp'),('popular','sort_pop')] %}
-        <a href="?{% for k,v in request.args.items() %}{% if k!='sort' and k!='page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}sort={{ val }}"
-           class="chip {% if sort==val %}on{% endif %}" data-i18n="{{ key }}">{{ val }}</a>
-        {% endfor %}
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--mt);font-weight:700;text-transform:uppercase;letter-spacing:.3px" data-i18n="sort_label">Saralash:</span>
+        <div class="sort-pills">
+          {% for val,label,key in [('new','Yangi','sort_new'),('price_asc','Arzon avval','sort_cheap'),('price_desc','Qimmat avval','sort_exp'),('popular','Mashhur','sort_pop')] %}
+          <a href="?{% for k,v in request.args.items() %}{% if k!='sort' and k!='page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}sort={{ val }}"
+             class="sort-pill {% if sort==val %}active{% endif %}" data-i18n="{{ key }}">{{ label }}</a>
+          {% endfor %}
+        </div>
       </div>
     </form>
   </div>
 
   <!-- Animal type quick filters -->
-  <div class="frow" style="margin-bottom:20px;gap:8px;flex-wrap:wrap" data-anim>
-    <a href="/catalog" class="chip {% if not atype %}on{% endif %}">🐾 <span data-i18n="all_types">Hammasi</span></a>
+  <div class="type-pills" style="margin-bottom:18px" data-anim>
+    <a href="/catalog" class="type-pill {% if not atype %}active{% endif %}">🐾 <span data-i18n="all_types">Hammasi</span></a>
     {% for slug,emoji,name in animal_types %}
     <a href="/catalog?type={{ slug }}{% if q %}&q={{ q }}{% endif %}{% if reg %}&region={{ reg }}{% endif %}"
-       class="chip {% if atype==slug %}on{% endif %}">{{ emoji }} {{ name }}</a>
+       class="type-pill {% if atype==slug %}active{% endif %}">{{ emoji }} {{ name }}</a>
     {% endfor %}
   </div>
 
@@ -54,7 +58,7 @@
   <div class="g4">
     {% for item in items %}
     <div style="position:relative;animation-delay:{{ loop.index0*0.04 }}s" data-anim>
-      <a href="/listing/{{ item.id }}" class="card" style="display:block;text-decoration:none;color:inherit">
+      <a href="/listing/{{ item.id }}" class="card-wrap" style="display:flex;flex-direction:column;text-decoration:none;color:inherit">
         <div class="card-img {% if item.is_premium %}premium{% endif %}">
           {% if item.photos %}
             <img src="/static/uploads/{{ item.photos.split(',')[0] }}" alt="{{ item.title }}" loading="lazy"/>

@@ -184,11 +184,12 @@
   <div style="height:1px;background:var(--bdr);margin:6px 0"></div>
   {% if me %}
   <a href="/profile">👤 {{ me.full_name or me.username }}</a>
+  {% if me.is_admin %}<a href="/admin/" style="color:#7c3aed;font-weight:800">⚙️ Admin Panel</a>{% endif %}
   <a href="/logout" style="color:#dc2626">🚪 Chiqish</a>
   {% else %}
-  <div style="display:flex;gap:8px">
-    <a href="/login" class="btn btn-o" style="flex:1;justify-content:center" data-i18n="login">Kirish</a>
-    <a href="/register" class="btn btn-p" style="flex:1;justify-content:center" data-i18n="register">Ro'yxat</a>
+  <div class="nv-mob-auth">
+    <a href="/login" class="btn btn-o" style="flex:1;text-align:center;justify-content:center;padding:11px;font-size:14px;font-weight:700" data-i18n="login">Kirish</a>
+    <a href="/register" class="btn btn-p" style="flex:1;text-align:center;justify-content:center;padding:11px;font-size:14px;font-weight:700" data-i18n="register">Ro'yxat</a>
   </div>
   {% endif %}
 </div>
